@@ -20,7 +20,7 @@ const Contact = () => {
   return (
     <section className="relative py-20 overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-sky-50 to-white">
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-sky-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <div className="wave-container">
           <div className="wave wave1" />
           <div className="wave wave2" />
@@ -35,10 +35,10 @@ const Contact = () => {
           transition={{ duration: 0.5 }}
           className="text-center space-y-4 mb-16"
         >
-          <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-700 to-blue-900">
+          <h2 className="text-4xl font-bold text-gray-900 dark:text-gray-100">
             Contact Us
           </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Get in touch with us for fresh seafood delivery or partnership inquiries
           </p>
         </motion.div>
@@ -65,11 +65,11 @@ const Contact = () => {
             </div>
 
             {/* Rating Card */}
-            <div className="bg-white/50 backdrop-blur-sm rounded-xl p-6 border border-cyan-100">
+            <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-2">
                 <Star className="h-6 w-6 text-yellow-400 fill-current" />
-                <span className="text-2xl font-bold text-gray-900">4.8</span>
-                <span className="text-gray-600">(200+ Reviews)</span>
+                <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">4.8</span>
+                <span className="text-gray-600 dark:text-gray-300">(200+ Reviews)</span>
               </div>
             </div>
 
@@ -81,11 +81,11 @@ const Contact = () => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-white/50 backdrop-blur-sm rounded-xl p-6 border border-cyan-100"
+                  className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-cyan-100"
                 >
                   <info.icon className="h-6 w-6 text-cyan-600 mb-3" />
-                  <h3 className="font-medium text-gray-900">{info.title}</h3>
-                  <p className="text-gray-600">{info.details}</p>
+                  <h3 className="font-medium text-gray-900 dark:text-gray-100">{info.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-300">{info.details}</p>
                 </motion.div>
               ))}
             </div>
@@ -96,39 +96,39 @@ const Contact = () => {
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-white/50 backdrop-blur-sm rounded-xl p-8 border border-cyan-100"
+            className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-8 border border-cyan-100"
           >
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-gray-700 mb-2" htmlFor="name">
+                <label className="block text-gray-700 dark:text-gray-300 mb-2" htmlFor="name">
                   Name
                 </label>
                 <input
                   type="text"
                   id="name"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                   required
                 />
               </div>
               <div>
-                <label className="block text-gray-700 mb-2" htmlFor="email">
+                <label className="block text-gray-700 dark:text-gray-300 mb-2" htmlFor="email">
                   Email
                 </label>
                 <input
                   type="email"
                   id="email"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                   required
                 />
               </div>
               <div>
-                <label className="block text-gray-700 mb-2" htmlFor="message">
+                <label className="block text-gray-700 dark:text-gray-300 mb-2" htmlFor="message">
                   Message
                 </label>
                 <textarea
                   id="message"
                   rows={4}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                   required
                 />
               </div>

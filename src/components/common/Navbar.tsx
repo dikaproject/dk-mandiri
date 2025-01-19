@@ -2,10 +2,13 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Sun, Moon } from 'lucide-react';
+import { useTheme } from '@/components/context/ThemeContext';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,7 +24,7 @@ const Navbar = () => {
       animate={{ opacity: 1, y: 0 }}
       className={`fixed w-full z-50 transition-all duration-300 ${
         isScrolled 
-          ? 'bg-gradient-to-r from-white/90 to-blue-50/90 backdrop-blur-md shadow-lg' 
+          ? 'dark:bg-gray-900/90 bg-white/90 backdrop-blur-md shadow-lg' 
           : 'bg-transparent'
       }`}
     >
@@ -42,12 +45,25 @@ const Navbar = () => {
               <Link
                 key={item}
                 href={`/${item}`}
-                className="relative group text-gray-700 hover:text-blue-600 transition-colors duration-300"
+                className="relative group text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
               >
                 <span className="capitalize">{item}</span>
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-teal-500 group-hover:w-full transition-all duration-300"/>
               </Link>
             ))}
+
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            >
+              {theme === 'dark' ? (
+                <Sun className="h-5 w-5 text-yellow-500" />
+              ) : (
+                <Moon className="h-5 w-5 text-gray-700" />
+              )}
+            </button>
+
             <Link 
               href="/contact"
               className="relative overflow-hidden px-6 py-2 rounded-md group bg-gradient-to-r from-blue-600 to-teal-500 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"

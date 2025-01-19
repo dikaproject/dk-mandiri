@@ -31,7 +31,7 @@ const HowToOrder = () => {
   return (
     <section className="relative py-20 overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-sky-50 to-white">
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-sky-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <div className="wave-container">
           <div className="wave wave1" />
           <div className="wave wave2" />
@@ -49,10 +49,10 @@ const HowToOrder = () => {
         >
           {/* Header */}
           <motion.div variants={itemVariants} className="text-center space-y-4">
-            <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-700 to-blue-900">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-gray-100">
               How to Order
             </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Choose your preferred way to order
             </p>
           </motion.div>
@@ -64,7 +64,7 @@ const HowToOrder = () => {
               className={`px-6 py-3 rounded-lg flex items-center gap-2 transition-all ${
                 activeTab === 'online'
                   ? 'bg-cyan-600 text-white shadow-lg scale-105'
-                  : 'bg-white/50 text-cyan-600 hover:bg-white/80'
+                  : 'bg-white/50 dark:bg-gray-800/50 text-cyan-600 dark:text-cyan-400 hover:bg-white/80 dark:hover:bg-gray-700/80'
               }`}
             >
               <Truck className="h-5 w-5" />
@@ -75,7 +75,7 @@ const HowToOrder = () => {
               className={`px-6 py-3 rounded-lg flex items-center gap-2 transition-all ${
                 activeTab === 'offline'
                   ? 'bg-cyan-600 text-white shadow-lg scale-105'
-                  : 'bg-white/50 text-cyan-600 hover:bg-white/80'
+                  : 'bg-white/50 dark:bg-gray-800/50 text-cyan-600 dark:text-cyan-400 hover:bg-white/80 dark:hover:bg-gray-700/80'
               }`}
             >
               <Store className="h-5 w-5" />
@@ -92,15 +92,15 @@ const HowToOrder = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="rounded-2xl bg-white/50 backdrop-blur-sm p-8 border border-cyan-100 shadow-lg">
+            <div className="rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm p-8 border border-gray-200 dark:border-gray-700 shadow-lg">
               <div className="space-y-6">
                 <div className="flex items-center gap-3">
                   {activeTab === 'online' ? (
-                    <Truck className="h-8 w-8 text-cyan-600" />
+                    <Truck className="h-8 w-8 text-cyan-600 dark:text-cyan-400" />
                   ) : (
-                    <Store className="h-8 w-8 text-cyan-600" />
+                    <Store className="h-8 w-8 text-cyan-600 dark:text-cyan-400" />
                   )}
-                  <h3 className="text-2xl font-semibold text-cyan-900">
+                  <h3 className="text-2xl font-semibold text-cyan-900 dark:text-cyan-100">
                     {activeTab === 'online' ? 'Online Delivery' : 'Store Pickup'}
                   </h3>
                 </div>
@@ -112,8 +112,8 @@ const HowToOrder = () => {
                         {index + 1}
                       </div>
                       <div>
-                        <h4 className="font-medium text-gray-900">{step.title}</h4>
-                        <p className="text-gray-600">{step.description}</p>
+                        <h4 className="font-medium text-gray-900 dark:text-gray-100">{step.title}</h4>
+                        <p className="text-gray-600 dark:text-gray-300">{step.description}</p>
                       </div>
                     </div>
                   ))}

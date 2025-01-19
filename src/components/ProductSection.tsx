@@ -24,7 +24,7 @@ const ProductSection = () => {
   return (
     <section className="relative py-20 overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-sky-50 to-white">
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-sky-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <div className="wave-container">
           <div className="wave wave1" />
           <div className="wave wave2" />
@@ -48,7 +48,7 @@ const ProductSection = () => {
                 Best Selling Products
               </h2>
             </div>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Our most popular fresh catches, delivered straight to your business
             </p>
           </motion.div>
@@ -62,7 +62,7 @@ const ProductSection = () => {
               <motion.div
                 key={index}
                 variants={itemVariants}
-                className="group relative rounded-xl bg-white shadow-md hover:shadow-xl transition-all duration-300"
+                className="group relative rounded-xl bg-white dark:bg-gray-800 shadow-md hover:shadow-xl transition-all duration-300"
               >
                 {/* Product Image */}
                 <div className="relative h-48 w-full overflow-hidden rounded-t-xl">
@@ -73,7 +73,7 @@ const ProductSection = () => {
                     className="object-cover transform group-hover:scale-110 transition-transform duration-300"
                   />
                   {/* Trending Badge */}
-                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
+                  <div className="absolute top-4 right-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-3 py-1 rounded-full">
                     <div className="flex items-center gap-1">
                       <Fish className="h-4 w-4 text-cyan-600" />
                       <span className="text-sm font-medium text-cyan-700">Trending</span>
@@ -83,7 +83,7 @@ const ProductSection = () => {
 
                 {/* Product Info */}
                 <div className="p-6 space-y-4">
-                  <h3 className="text-xl font-semibold text-gray-900">{product.name}</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{product.name}</h3>
                   
                   {/* Rating */}
                   <div className="flex items-center gap-1">
@@ -97,7 +97,7 @@ const ProductSection = () => {
                         }`}
                       />
                     ))}
-                    <span className="text-sm text-gray-600 ml-2">
+                    <span className="text-sm text-gray-600 dark:text-gray-400 ml-2">
                       ({product.reviews} reviews)
                     </span>
                   </div>
@@ -162,4 +162,4 @@ const products = [
   }
 ];
 
-export default ProductSection;
+export default ProductSection; 

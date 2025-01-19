@@ -28,7 +28,7 @@ const MitraSection = () => {
   return (
     <section className="relative py-20 overflow-hidden">
       {/* Background with wave effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-sky-50 to-white">
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-sky-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <div className="wave-container">
           <div className="wave wave1" />
           <div className="wave wave2" />
@@ -49,7 +49,7 @@ const MitraSection = () => {
             <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-700 to-blue-900">
               Partner With DK-Mandiri
             </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Join our network of successful businesses. We provide quality seafood products
               and reliable partnership opportunities.
             </p>
@@ -64,14 +64,14 @@ const MitraSection = () => {
               <motion.div
                 key={index}
                 variants={itemVariants}
-                className="group relative rounded-xl bg-white/50 backdrop-blur-sm p-8 hover:bg-white/80 transition-all duration-300 border border-cyan-100 hover:border-cyan-200 hover:shadow-lg"
+                className="group relative rounded-xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm p-8 hover:bg-white/80 dark:hover:bg-gray-700/80 transition-all duration-300 border border-gray-200 dark:border-gray-700"
               >
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-400 to-blue-400 opacity-0 group-hover:opacity-10 rounded-xl transition duration-300" />
                 <benefit.icon className="h-10 w-10 text-cyan-600 mb-4" />
-                <h3 className="text-xl font-semibold text-cyan-900 mb-3">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">
                   {benefit.title}
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-300">
                   {benefit.description}
                 </p>
               </motion.div>
