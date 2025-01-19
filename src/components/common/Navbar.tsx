@@ -41,7 +41,7 @@ const Navbar = () => {
           
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            {['home', 'about', 'products', 'partners', 'community','contact'].map((item) => (
+            {['home', 'about', 'products', 'partners', 'community'].map((item) => (
               <Link
                 key={item}
                 href={item === 'home' ? '/' : `/${item}`}

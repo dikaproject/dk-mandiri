@@ -47,11 +47,10 @@ const MitraSection = () => {
           {/* Header */}
           <motion.div variants={itemVariants} className="text-center space-y-4">
             <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-700 to-blue-900">
-              Partner With DK-Mandiri
+            Bermitra dengan DK-Mandiri
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Join our network of successful businesses. We provide quality seafood products
-              and reliable partnership opportunities.
+            Bergabunglah dengan jaringan bisnis kami yang sukses. Kami menyediakan produk makanan laut berkualitas dan peluang kemitraan yang dapat diandalkan.
             </p>
           </motion.div>
 
@@ -86,17 +85,16 @@ const MitraSection = () => {
             <div className="bg-gradient-to-r from-cyan-600 to-blue-600 p-8 md:p-12">
               <div className="max-w-3xl mx-auto text-center space-y-6">
                 <h3 className="text-2xl md:text-3xl font-bold text-white">
-                  Ready to Grow Together?
+                Siap Tumbuh Bersama?
                 </h3>
                 <p className="text-cyan-100">
-                  Start your partnership journey with DK-Mandiri today and experience
-                  the benefits of working with a trusted seafood supplier.
+                Mulailah perjalanan kemitraan Anda dengan DK-Mandiri hari ini dan rasakan manfaat bekerja sama dengan pemasok makanan laut tepercaya.
                 </p>
                 <Link
                   href="/contact"
                   className="inline-flex items-center px-8 py-3 rounded-lg bg-white text-cyan-700 hover:bg-cyan-50 transition-colors duration-300"
                 >
-                  Become a Partner
+                  Menjadi Mitra
                   <Handshake className="ml-2 h-5 w-5" />
                 </Link>
               </div>
@@ -111,33 +109,33 @@ const MitraSection = () => {
 const benefits = [
   {
     icon: Handshake,
-    title: "Trusted Partnership",
-    description: "Build a long-term relationship with a reliable seafood supplier committed to your success."
+    title: "Kemitraan Terpercaya",
+    description: "Bangun hubungan jangka panjang dengan pemasok makanan laut yang andal dan berkomitmen untuk kesuksesan Anda."
   },
   {
     icon: Truck,
-    title: "Reliable Delivery",
-    description: "Enjoy timely and consistent delivery of fresh seafood products to your business."
+    title: "Pengiriman yang Dapat Diandalkan",
+    description: "Nikmati pengiriman produk makanan laut segar yang tepat waktu dan konsisten untuk bisnis Anda.Enjoy timely and consistent delivery of fresh seafood products to your business."
   },
   {
     icon: BadgeDollarSign,
-    title: "Competitive Pricing",
-    description: "Access premium quality products at competitive wholesale prices."
+    title: "Harga Kompetitif",
+    description: "Akses produk berkualitas premium dengan harga grosir yang kompetitif."
   },
   {
     icon: Scale,
-    title: "Quality Guarantee",
-    description: "Receive consistently high-quality seafood that meets your standards."
+    title: "Jaminan Kualitas",
+    description: "Dapatkan hidangan laut berkualitas tinggi yang memenuhi standar Anda secara konsisten."
   },
   {
     icon: Users2,
-    title: "Dedicated Support",
-    description: "Get personalized support from our experienced team whenever you need it."
+    title: "Dukungan Khusus",
+    description: "Dapatkan dukungan personal dari tim kami yang berpengalaman kapan pun Anda membutuhkannya."
   },
   {
     icon: Clock,
-    title: "Flexible Terms",
-    description: "Benefit from flexible partnership terms tailored to your business needs."
+    title: "Ketentuan Fleksibel",
+    description: "Dapatkan manfaat dari persyaratan kemitraan yang fleksibel yang disesuaikan dengan kebutuhan bisnis Anda."
   }
 ];
 

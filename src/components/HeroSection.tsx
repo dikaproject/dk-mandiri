@@ -58,7 +58,7 @@ const HeroSection = () => {
               {/* Updated blur gradient for dark mode */}
               <div className="absolute -inset-1 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-400 opacity-30 blur dark:from-cyan-600 dark:to-blue-600 dark:opacity-20"></div>
               <h1 className="relative text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-700 to-blue-900 dark:from-cyan-400 dark:to-blue-500 py-2">
-                Fresh From The Ocean
+                Ikan Segar Dari Laut
               </h1>
             </motion.div>
 
@@ -68,8 +68,7 @@ const HeroSection = () => {
               transition={{ delay: 0.4 }}
               className="text-xl md:text-2xl text-blue-950 dark:text-gray-100 max-w-3xl mx-auto leading-relaxed"
             >
-              Premium quality seafood, sourced directly from local fishermen.
-              Fresh, sustainable, and delivered to your doorstep.
+              Hidangan laut berkualitas premium, bersumber langsung dari nelayan lokal. Segar, lestari, dan diantarkan langsung ke depan pintu rumah Anda.
             </motion.p>
 
             <motion.div
@@ -83,14 +82,14 @@ const HeroSection = () => {
                 className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-medium overflow-hidden rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 text-white transition-all hover:scale-105"
               >
                 <span className="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-32 group-hover:h-32 opacity-10"></span>
-                <span className="relative">Our Products</span>
+                <span className="relative">Produk Kami</span>
                 <Fish className="ml-2 h-5 w-5" />
               </Link>
                 <Link
                 href="/contact"
                 className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-medium overflow-hidden rounded-lg border-2 border-cyan-600 dark:border-cyan-400 text-cyan-700 dark:text-cyan-400 transition-all hover:bg-cyan-50 dark:hover:bg-cyan-900/30"
                 >
-                <span className="relative transition-colors">Contact Us</span>
+                <span className="relative transition-colors">Hubungi Kami</span>
                 <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
             </motion.div>
@@ -129,18 +128,18 @@ const HeroSection = () => {
 const features = [
   {
     icon: Fish,
-    title: "Fresh Quality",
-    description: "Premium seafood sourced directly from local fishermen"
+    title: "Kualitas Segar",
+    description: "Hidangan laut premium yang bersumber langsung dari nelayan lokal"
   },
   {
     icon: Timer,
-    title: "Daily Catch",
-    description: "Fresh fish caught and delivered on the same day"
+    title: "Tangkapan Harian",
+    description: "Ikan segar yang ditangkap dan dikirim pada hari yang sama"
   },
   {
     icon: Award,
-    title: "Best Quality",
-    description: "Guaranteed freshness and premium selection"
+    title: "Kualitas Terbaik",
+    description: "Kesegaran terjamin dan pilihan premium"
   }
 ];
 

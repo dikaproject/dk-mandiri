@@ -23,10 +23,10 @@ const AboutSection = () => {
           className="text-center space-y-4 mb-16"
         >
           <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-700 to-blue-900 dark:from-cyan-400 dark:to-blue-500">
-            About DK-Mandiri
+            Tentang DK Mandiri
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Your trusted partner in premium seafood supply since 2015
+          Mitra terpercaya Anda dalam penyediaan makanan laut premium sejak tahun 2010
           </p>
         </motion.div>
 
@@ -38,9 +38,9 @@ const AboutSection = () => {
             transition={{ duration: 0.5 }}
             className="space-y-6"
           >
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Our Story</h2>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Cerita Kami</h2>
             <p className="text-gray-600 dark:text-gray-300">
-              Starting from a small fish market stall, DK-Mandiri has grown into one of the most trusted seafood suppliers in the region. Our commitment to quality and freshness has earned us the trust of numerous businesses and individual customers.
+            Berawal dari sebuah kios kecil di pasar ikan, DK Mandiri telah berkembang menjadi salah satu pemasok makanan laut yang paling tepercaya di wilayah ini. Komitmen kami terhadap kualitas dan kesegaran telah membuat kami mendapatkan kepercayaan dari berbagai perusahaan dan pelanggan perorangan.
             </p>
             <div className="grid grid-cols-2 gap-4">
               {stats.map((stat, index) => (
@@ -59,7 +59,7 @@ const AboutSection = () => {
             className="relative h-[400px] rounded-2xl overflow-hidden"
           >
             <Image
-              src="/about-image.jpg"
+              src="/about.png"
               alt="DK-Mandiri Facility"
               fill
               className="object-cover"
@@ -98,27 +98,27 @@ const AboutSection = () => {
 };
 
 const stats = [
-  { value: '1000+', label: 'Happy Customers' },
-  { value: '500+', label: 'Monthly Orders' },
-  { value: '8+', label: 'Years Experience' },
-  { value: '95%', label: 'Satisfaction Rate' }
+  { value: '5000+', label: 'Pelanggan yang bahagia' },
+  { value: '500+', label: 'Pesanan Bulanan' },
+  { value: '14+', label: 'Pengalaman bertahun-tahun' },
+  { value: '95%', label: 'Tingkat Kepuasan' }
 ];
 
 const features = [
   {
     icon: Fish,
-    title: 'Fresh Quality',
-    description: 'We ensure all our seafood products meet the highest quality standards.'
+    title: 'Kualitas Segar',
+    description: 'Kami memastikan semua produk makanan laut kami memenuhi standar kualitas tertinggi.'
   },
   {
     icon: Award,
-    title: 'Best Service',
-    description: 'Dedicated support and reliable delivery for all our customers.'
+    title: 'Layanan Terbaik',
+    description: 'Dukungan khusus dan pengiriman yang dapat diandalkan untuk semua pelanggan kami.'
   },
   {
     icon: Users,
-    title: 'Community First',
-    description: 'Supporting local fishermen and sustainable fishing practices.'
+    title: 'Mengutamakan Komunitas',
+    description: 'Mendukung nelayan lokal dan praktik penangkapan ikan yang berkelanjutan.'
   }
 ];
 

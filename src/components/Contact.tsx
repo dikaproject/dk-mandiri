@@ -36,10 +36,10 @@ const Contact = () => {
           className="text-center space-y-4 mb-16"
         >
           <h2 className="text-4xl font-bold text-gray-900 dark:text-gray-100">
-            Contact Us
+          Hubungi Kami
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Get in touch with us for fresh seafood delivery or partnership inquiries
+          Hubungi kami untuk pengiriman makanan laut segar atau pertanyaan kemitraan
           </p>
         </motion.div>
 
@@ -69,7 +69,7 @@ const Contact = () => {
               <div className="flex items-center gap-2">
                 <Star className="h-6 w-6 text-yellow-400 fill-current" />
                 <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">4.8</span>
-                <span className="text-gray-600 dark:text-gray-300">(200+ Reviews)</span>
+                <span className="text-gray-600 dark:text-gray-300">(200+ Ulasan)</span>
               </div>
             </div>
 
@@ -149,23 +149,23 @@ const Contact = () => {
 const contactInfo = [
   {
     icon: MapPin,
-    title: "Address",
-    details: "Jl. Raya Purwokerto, Kecamatan, Kabupaten"
+    title: "Alamat",
+    details: "Jl. Suryanegara, Mertangga, Jetis, Kec. Nusawungu, Kabupaten Cilacap"
   },
   {
     icon: Phone,
-    title: "Phone",
-    details: "+62 123 456 789"
+    title: "Nomor Telepon",
+    details: "+62 812-2784-8422" 
   },
   {
     icon: Mail,
     title: "Email",
-    details: "info@dkmandiri.com"
+    details: "dikagilang2007@gmail.com"
   },
   {
     icon: Clock,
-    title: "Business Hours",
-    details: "Mon - Sat: 8AM - 5PM"
+    title: "Jam Operasional",
+    details: "Senin - Minggu, 08:00 - 20:00"
   }
 ];
 

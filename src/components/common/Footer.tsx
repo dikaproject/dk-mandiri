@@ -8,9 +8,9 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Company Info */}
             <div className="space-y-4">
-              <h3 className="text-2xl font-bold">DK-Mandiri</h3>
+              <h3 className="text-2xl font-bold">DK Mandiri</h3>
               <p className="text-gray-400">
-                Your trusted partner in premium fish supply. Quality and freshness guaranteed.
+              Mitra tepercaya Anda dalam penyediaan ikan premium. Kualitas dan kesegaran terjamin.
               </p>
               <div className="flex space-x-4">
                 <a href="#" className="hover:text-blue-400 transition-colors">
@@ -59,10 +59,10 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
             <ul className="space-y-2 text-gray-400">
-              <li>123 Fish Market Street</li>
-              <li>Surabaya, Indonesia</li>
-              <li>Phone: +62 123 456 789</li>
-              <li>Email: info@dk-mandiri.com</li>
+              <li>Jl. Suryanegara, Mertangga, Jetis</li>
+              <li>Nusawungu Cilacap, Indonesia</li>
+              <li>Phone: +62 812-2784-8422</li>
+              <li>Email: dikagilang2007@gmail.com</li>
             </ul>
           </div>
 

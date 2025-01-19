@@ -7,7 +7,6 @@ import {
   Mail,
   Clock,
   Instagram,
-  Facebook,
   Loader2,
   Check,
   AlertCircle,
@@ -90,11 +89,10 @@ const ContactSection = () => {
           className="text-center space-y-4 mb-16"
         >
           <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-700 to-blue-900 dark:from-cyan-400 dark:to-blue-500">
-            Get in Touch
+          Hubungi kami
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Have questions? We&apos;d love to hear from you. Send us a message
-            and we&apos;ll respond as soon as possible.
+          Ada pertanyaan? Kami akan senang mendengarnya dari Anda. Kirimkan pesan kepada kami dan kami akan merespons sesegera mungkin.
           </p>
         </motion.div>
 
@@ -109,7 +107,7 @@ const ContactSection = () => {
             <div className="relative rounded-xl overflow-hidden shadow-lg group">
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
                 <a
-                  href="https://goo.gl/maps/your-location-link"
+                  href="https://maps.app.goo.gl/Hh8krzguaxbPQSzS9"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-white bg-cyan-600/90 px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors"
@@ -262,40 +260,36 @@ const ContactSection = () => {
 };
 
 const contactInfo = [
-  {
-    icon: MapPin,
-    title: "Address",
-    details: "Jl. Raya Purwokerto, Kecamatan, Kabupaten",
-  },
-  {
-    icon: Phone,
-    title: "Phone",
-    details: "+62 123 456 789",
-  },
-  {
-    icon: Mail,
-    title: "Email",
-    details: "info@dkmandiri.com",
-  },
-  {
-    icon: Clock,
-    title: "Business Hours",
-    details: "Mon - Sat: 8AM - 5PM",
-  },
-];
+    {
+      icon: MapPin,
+      title: "Alamat",
+      details: "Jl. Suryanegara, Mertangga, Jetis, Kec. Nusawungu, Kabupaten Cilacap"
+    },
+    {
+      icon: Phone,
+      title: "Nomor Telepon",
+      details: "+62 812-2784-8422" 
+    },
+    {
+      icon: Mail,
+      title: "Email",
+      details: "dikagilang2007@gmail.com"
+    },
+    {
+      icon: Clock,
+      title: "Jam Operasional",
+      details: "Senin - Minggu, 08:00 - 20:00"
+    }
+  ];
 
 const socialLinks = [
   {
     icon: Instagram,
-    link: "https://instagram.com/dkmandiri",
-  },
-  {
-    icon: Facebook,
-    link: "https://facebook.com/dkmandiri",
+    link: "https://instagram.com/dika_art_project",
   },
   {
     icon: WhatsAppIcon,
-    link: "https://wa.me/6281234567890", // Replace with actual WhatsApp number
+    link: "https://wa.me/6281227848422", // Replace with actual WhatsApp number
   },
 ];
 

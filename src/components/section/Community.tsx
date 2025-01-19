@@ -17,20 +17,28 @@ const Community = () => {
   const [reviews] = useState<Review[]>([
     {
       id: '1',
-      name: 'John Doe',
-      email: 'john@example.com',
+      name: 'Dani',
+      email: 'dani@gmail,com',
       message: 'Ikan selalu fresh dan pelayanan sangat ramah!',
       rating: 5,
-      date: '2024-03-15'
+      date: '2025-01-01'
     },
     {
       id: '2',
-      name: 'Jane Smith',
-      email: 'jane@example.com',
+      name: 'Dika',
+      email: 'dika@gmail.com',
       message: 'Harga terjangkau untuk kualitas yang sangat baik.',
-      rating: 4,
-      date: '2024-03-14'
-    }
+      rating: 5,
+      date: '2025-01-03'
+    },
+    {
+      id: '3',
+      name: 'Dendi',
+      email: 'dendi@gmail.com',
+        message: 'Ikan Kakapnya fresh banget dan bagus untuk dimasak, recommended!',
+        rating: 5,
+        date: '2025-01-06'
+    },
   ]);
 
   const [formData, setFormData] = useState({
@@ -64,10 +72,10 @@ const Community = () => {
           className="text-center space-y-4 mb-16"
         >
           <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-700 to-blue-900 dark:from-cyan-400 dark:to-blue-500">
-            Community Reviews
+          Ulasan Masyarakat/Komunitas
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Share your experience with DK-Mandiri
+          Bagikan pengalaman Anda dengan DK Mandiri
           </p>
         </motion.div>
 
@@ -77,7 +85,7 @@ const Community = () => {
           className="mb-8 mx-auto flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-700 hover:to-blue-700 transition-all duration-300"
         >
           <PlusCircle className="h-5 w-5" />
-          Add Your Review
+          Tambahkan Ulasan
         </motion.button>
 
         {/* Reviews Grid */}

@@ -1,13 +1,13 @@
 const products = [
   {
     id: '1',
-    name: 'Ikan Dory',
+    name: 'Ikan Dori',
     price: 'Rp 45.000/kg',
-    image: 'dore.jpg',
+    image: 'dori.jpeg',
     rating: 5,
     reviews: 128,
     stock: 50,
-    description: 'Premium quality Dory fish, perfect for fillet. Fresh from our local suppliers, this fish is known for its tender meat and versatile cooking applications.'
+    description: 'Ikan Dori kualitas premium, sempurna untuk fillet. Segar dari pemasok lokal kami, ikan ini dikenal dengan dagingnya yang empuk dan dapat diolah menjadi berbagai macam masakan.'
   },
   {
     id: '2',
@@ -17,17 +17,17 @@ const products = [
     rating: 4,
     reviews: 89,
     stock: 35,
-    description: 'Fresh Gurame fish, ideal for various Indonesian dishes. Known for its sweet taste and tender meat, perfect for deep frying or steam cooking.'
+    description: 'Ikan Gurame yang segar, cocok untuk berbagai masakan Indonesia. Dikenal karena rasanya yang manis dan dagingnya yang empuk, cocok untuk digoreng atau dikukus.'
   },
   {
     id: '3',
     name: 'Ikan Kakap',
     price: 'Rp 52.000/kg',
-    image: 'kakap.jpg',
+    image: 'kakap.png',
     rating: 5,
     reviews: 156,
     stock: 25,
-    description: 'Premium Red Snapper, fresh from the sea. Rich in flavor and perfect for grilling or soup-based dishes. Carefully selected for the best quality.'
+    description: 'Kakap Merah Premium, segar dari laut. Kaya akan rasa dan sempurna untuk hidangan panggang atau sup. Dipilih dengan cermat untuk kualitas terbaik.'
   },
   {
     id: '4',
@@ -37,7 +37,7 @@ const products = [
     rating: 4,
     reviews: 94,
     stock: 15,
-    description: 'Fresh Grouper fish, known for its firm texture and sweet taste. Ideal for steaming or grilling, this fish is a favorite among seafood lovers.'
+    description: 'Ikan Kerapu segar, terkenal dengan teksturnya yang keras dan rasanya yang manis. Ideal untuk dikukus atau dipanggang, ikan ini merupakan favorit di antara para pencinta hidangan laut.'
   }
 ];
 

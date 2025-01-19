@@ -50,10 +50,10 @@ const HowToOrder = () => {
           {/* Header */}
           <motion.div variants={itemVariants} className="text-center space-y-4">
             <h2 className="text-4xl font-bold text-gray-900 dark:text-gray-100">
-              How to Order
+            Bagaimana cara memesan
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Choose your preferred way to order
+            Pilih cara yang Anda inginkan untuk memesan
             </p>
           </motion.div>
 
@@ -68,7 +68,7 @@ const HowToOrder = () => {
               }`}
             >
               <Truck className="h-5 w-5" />
-              <span>Online Delivery</span>
+              <span>Pengiriman Online</span>
             </button>
             <button
               onClick={() => setActiveTab('offline')}
@@ -79,7 +79,7 @@ const HowToOrder = () => {
               }`}
             >
               <Store className="h-5 w-5" />
-              <span>Store Pickup</span>
+              <span>Pengambilan Di Toko</span>
             </button>
           </div>
 
@@ -125,14 +125,14 @@ const HowToOrder = () => {
                       <>
                         <AlertCircle className="h-5 w-5" />
                         <p className="text-sm font-medium">
-                          Delivery available within 20km radius for freshness guarantee
+                        Pengiriman tersedia dalam radius 20 km untuk jaminan kesegaran
                         </p>
                       </>
                     ) : (
                       <>
                         <Clock className="h-5 w-5" />
                         <p className="text-sm font-medium">
-                          Please pick up within 1-2 hours of ordering
+                        Silakan ambil dalam waktu 1-2 jam setelah pemesanan
                         </p>
                       </>
                     )}
@@ -149,39 +149,39 @@ const HowToOrder = () => {
 
 const onlineSteps = [
   {
-    title: "Add to Cart",
-    description: "Select your desired fresh fish products and add them to cart"
+    title: "Tambahkan ke Keranjang",
+    description: "Pilih produk ikan segar yang Anda inginkan dan tambahkan ke keranjang"
   },
   {
-    title: "Enter Delivery Address",
-    description: "Provide your delivery address within our 20km service radius"
+    title: "Masukkan Alamat Pengiriman",
+    description: "Cantumkan alamat pengiriman Anda dalam radius layanan 20 km kami"
   },
   {
-    title: "Choose Payment Method",
-    description: "Select COD, QRIS, or bank transfer as your payment method"
+    title: "Pilih Metode Pembayaran",
+    description: "Pilih COD, QRIS, atau transfer bank sebagai metode pembayaran Anda"
   },
   {
-    title: "Receive Order Updates",
-    description: "Get automatic updates via WhatsApp including your invoice"
+    title: "Menerima Pembaruan Pesanan",
+    description: "Dapatkan pembaruan otomatis melalui WhatsApp termasuk faktur/Struk Pembelian Anda"
   }
 ];
 
 const offlineSteps = [
   {
-    title: "Place Your Order",
-    description: "Select products and provide your name and WhatsApp number"
+    title: "Lakukan Pemesanan Anda",
+    description: "Pilih produk dan berikan nama serta nomor WhatsApp Anda"
   },
   {
-    title: "Receive Order ID",
-    description: "Get your unique order ID and pickup instructions via WhatsApp"
+    title: "Menerima ID Pesanan",
+    description: "Dapatkan ID pesanan unik Anda dan instruksi pengambilan melalui WhatsApp"
   },
   {
-    title: "Visit Our Store",
-    description: "Come to our store within 1-2 hours of ordering"
+    title: "Kunjungi Toko Kami",
+    description: "Datanglah ke toko kami dalam waktu 1-2 jam setelah pemesanan"
   },
   {
-    title: "Collect Your Order",
-    description: "Show your order ID and collect your fresh fish"
+    title: "Ambil Pesanan Anda",
+    description: "Tunjukkan ID pesanan Anda dan ambil ikan segar Anda"
   }
 ];
 

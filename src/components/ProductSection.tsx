@@ -45,11 +45,11 @@ const ProductSection = () => {
             <div className="flex items-center justify-center gap-2">
               <TrendingUp className="h-8 w-8 text-cyan-600" />
               <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-700 to-blue-900">
-                Best Selling Products
+                 Produk Terlaris
               </h2>
             </div>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Our most popular fresh catches, delivered straight to your business
+            Hasil tangkapan segar kami yang paling populer, dikirim langsung ke rumah Anda atau restoran
             </p>
           </motion.div>
 

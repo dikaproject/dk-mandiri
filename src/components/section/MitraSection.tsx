@@ -23,10 +23,10 @@ const MitraSection = () => {
           className="text-center space-y-4 mb-16"
         >
           <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-700 to-blue-900 dark:from-cyan-400 dark:to-blue-500">
-            Become Our Partner
+          Menjadi Mitra Kami
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Join DK-Mandiri network of successful businesses and grow together with us
+          Bergabunglah dengan jaringan bisnis sukses DK Mandiri dan bertumbuhlah bersama kami
           </p>
         </motion.div>
 
@@ -58,7 +58,7 @@ const MitraSection = () => {
           className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-8 mb-16 border border-cyan-100 dark:border-gray-700"
         >
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-            Partnership Requirements
+          Persyaratan Kemitraan
           </h2>
           <ul className="space-y-4">
             {requirements.map((req, index) => (
@@ -80,7 +80,7 @@ const MitraSection = () => {
             href="/contact"
             className="inline-flex items-center px-8 py-3 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-700 hover:to-blue-700 transition-all duration-300"
           >
-            Apply Now
+            Menjadi Mitra
             <HandshakeIcon className="ml-2 h-5 w-5" />
           </Link>
         </motion.div>
@@ -92,43 +92,43 @@ const MitraSection = () => {
 const benefits = [
   {
     icon: HandshakeIcon,
-    title: "Trusted Partnership",
-    description: "Join a network of successful businesses and build long-term relationships"
+    title: "Kemitraan Terpercaya",
+    description: "Bergabunglah dengan jaringan bisnis yang sukses dan bangun hubungan jangka panjang"
   },
   {
     icon: ScaleIcon,
-    title: "Quality Products",
-    description: "Access premium quality seafood products at competitive prices"
+    title: "Produk Berkualitas",
+    description: "Akses produk makanan laut berkualitas premium dengan harga bersaing"
   },
   {
     icon: TruckIcon,
-    title: "Reliable Delivery",
-    description: "Enjoy timely and consistent delivery services"
+    title: "Pengiriman yang Dapat Diandalkan",
+    description: "Nikmati layanan pengiriman yang tepat waktu dan konsisten"
   },
   {
     icon: WalletIcon,
-    title: "Competitive Pricing",
-    description: "Get wholesale prices and special partner discounts"
+    title: "Harga Kompetitif",
+    description: "Dapatkan harga grosir dan diskon khusus mitra"
   },
   {
     icon: UsersIcon,
-    title: "Dedicated Support",
-    description: "Receive personalized support from our experienced team"
+    title: "Dukungan Khusus",
+    description: "Dapatkan dukungan yang dipersonalisasi dari tim kami yang berpengalaman"
   },
   {
     icon: ShieldCheckIcon,
-    title: "Quality Guarantee",
-    description: "All products are guaranteed fresh and high quality"
+    title: "Jaminan Kualitas",
+    description: "Semua produk dijamin segar dan berkualitas tinggi"
   }
 ];
 
 const requirements = [
-  "Valid business license or relevant permits",
-  "Minimum monthly purchase commitment",
-  "Proper storage facilities for seafood products",
-  "Clean and maintained business premises",
-  "Strong commitment to quality service",
-  "Good business reputation in the community"
+  "Izin usaha yang masih berlaku atau izin yang relevan",
+  "Komitmen pembelian bulanan minimum",
+  "Fasilitas penyimpanan yang layak untuk produk makanan laut",
+  "Tempat usaha yang bersih dan terawat",
+  "Komitmen yang kuat terhadap kualitas layanan",
+  "Reputasi bisnis yang baik di masyarakat"
 ];
 
 export default MitraSection;
