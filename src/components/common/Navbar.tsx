@@ -41,10 +41,10 @@ const Navbar = () => {
           
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            {['about', 'products', 'partners'].map((item) => (
+            {['home', 'about', 'products', 'partners', 'community','contact'].map((item) => (
               <Link
                 key={item}
-                href={`/${item}`}
+                href={item === 'home' ? '/' : `/${item}`}
                 className="relative group text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
               >
                 <span className="capitalize">{item}</span>
@@ -115,7 +115,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+            {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -123,10 +123,31 @@ const Navbar = () => {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden bg-gradient-to-b from-white/95 to-blue-50/95 backdrop-blur-lg border-t border-blue-100"
+            className="md:hidden bg-gradient-to-b from-white/95 to-blue-50/95 dark:from-gray-900/95 dark:to-gray-800/95 backdrop-blur-lg border-t border-blue-100 dark:border-gray-700"
           >
             <div className="px-4 py-6 space-y-4">
-              {['about', 'products', 'partners', 'contact'].map((item) => (
+              {/* Theme Toggle in Mobile */}
+              <motion.div
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -20, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <button
+                  onClick={toggleTheme}
+                  className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-white/50 dark:bg-gray-800/50 hover:bg-blue-50 dark:hover:bg-gray-700/50 transition-all duration-300"
+                >
+                  <span className="text-gray-700 dark:text-gray-300">Theme</span>
+                  {theme === 'dark' ? (
+                    <Sun className="h-5 w-5 text-yellow-500" />
+                  ) : (
+                    <Moon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+                  )}
+                </button>
+              </motion.div>
+      
+              {/* Navigation Links */}
+              {['home', 'about', 'products', 'partners', 'community', 'contact'].map((item) => (
                 <motion.div
                   key={item}
                   initial={{ x: -20, opacity: 0 }}
@@ -135,8 +156,8 @@ const Navbar = () => {
                   transition={{ duration: 0.3 }}
                 >
                   <Link
-                    href={`/${item}`}
-                    className="block px-4 py-3 text-gray-700 hover:text-blue-600 rounded-lg bg-white/50 hover:bg-blue-50 transition-all duration-300"
+                    href={item === 'home' ? '/' : `/${item}`}
+                    className="block px-4 py-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg bg-white/50 dark:bg-gray-800/50 hover:bg-blue-50 dark:hover:bg-gray-700/50 transition-all duration-300"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <span className="capitalize">{item}</span>
