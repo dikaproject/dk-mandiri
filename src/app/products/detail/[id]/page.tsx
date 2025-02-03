@@ -1,6 +1,6 @@
 'use client';
 import { useParams } from 'next/navigation';
-import PageWrapper from '@/components/PageWrapper';
+// import PageWrapper from '@/components/PageWrapper';
 import DetailProduct from '@/components/section/Products/DetailProduct';
 import Navbar from '@/components/common/Navbar';
 import Footer from '@/components/common/Footer';
@@ -14,8 +14,8 @@ export default function ProductDetailPage() {
 
   if (!product) {
     return (
-      <PageWrapper>
-        <Navbar />
+      <>
+       <Navbar />
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
@@ -27,15 +27,17 @@ export default function ProductDetailPage() {
           </div>
         </div>
         <Footer />
-      </PageWrapper>
+        </>
+       
     );
   }
 
   return (
-    <PageWrapper>
-      <Navbar />
+    <>
+     <Navbar />
       <DetailProduct {...product} />
       <Footer />
-    </PageWrapper>
+    </>
+     
   );
 }

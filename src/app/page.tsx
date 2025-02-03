@@ -1,4 +1,4 @@
-import PageWrapper from '@/components/PageWrapper';
+// import PageWrapper from '@/components/PageWrapper';
 import HeroSection from '@/components/HeroSection';
 import MitraSection from '@/components/MitraSection';
 import Navbar from '@/components/common/Navbar';
@@ -9,14 +9,14 @@ import Contact from '@/components/Contact';
 
 export default function Home() {
   return (
-    <PageWrapper>
-      <Navbar />
+<>
+<Navbar />
       <HeroSection />
       <ProductSection />
       <MitraSection />
       <HowToOrder />
       <Contact />
       <Footer />
-    </PageWrapper>
+</>
   );
 }

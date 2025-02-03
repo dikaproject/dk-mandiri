@@ -41,7 +41,7 @@ const Navbar = () => {
           
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            {['home', 'about', 'products', 'partners', 'community'].map((item) => (
+            {['home', 'about', 'products', 'partners', 'community', 'contact'].map((item) => (
               <Link
                 key={item}
                 href={item === 'home' ? '/' : `/${item}`}
@@ -65,10 +65,10 @@ const Navbar = () => {
             </button>
 
             <Link 
-              href="/contact"
+              href="/login"
               className="relative overflow-hidden px-6 py-2 rounded-md group bg-gradient-to-r from-blue-600 to-teal-500 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
             >
-              <span className="relative z-10">Contact Us</span>
+              <span className="relative z-10">Login</span>
               <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-700 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </Link>
           </div>
@@ -116,7 +116,7 @@ const Navbar = () => {
       </div>
 
             {/* Mobile Menu */}
-      <AnimatePresence>
+            <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
@@ -126,26 +126,8 @@ const Navbar = () => {
             className="md:hidden bg-gradient-to-b from-white/95 to-blue-50/95 dark:from-gray-900/95 dark:to-gray-800/95 backdrop-blur-lg border-t border-blue-100 dark:border-gray-700"
           >
             <div className="px-4 py-6 space-y-4">
-              {/* Theme Toggle in Mobile */}
-              <motion.div
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -20, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <button
-                  onClick={toggleTheme}
-                  className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-white/50 dark:bg-gray-800/50 hover:bg-blue-50 dark:hover:bg-gray-700/50 transition-all duration-300"
-                >
-                  <span className="text-gray-700 dark:text-gray-300">Theme</span>
-                  {theme === 'dark' ? (
-                    <Sun className="h-5 w-5 text-yellow-500" />
-                  ) : (
-                    <Moon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
-                  )}
-                </button>
-              </motion.div>
-      
+              {/* Theme Toggle in Mobile - unchanged */}
+
               {/* Navigation Links */}
               {['home', 'about', 'products', 'partners', 'community', 'contact'].map((item) => (
                 <motion.div
@@ -164,6 +146,22 @@ const Navbar = () => {
                   </Link>
                 </motion.div>
               ))}
+
+              {/* Login Button in Mobile */}
+              <motion.div
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -20, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Link
+                  href="/login"
+                  className="block px-4 py-3 text-white bg-gradient-to-r from-blue-600 to-teal-500 rounded-lg hover:from-blue-700 hover:to-teal-600 transition-all duration-300"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Login
+                </Link>
+              </motion.div>
             </div>
           </motion.div>
         )}

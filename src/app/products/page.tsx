@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import ProductCard from '@/components/section/Products/Product';
-import PageWrapper from '@/components/PageWrapper';
+// import PageWrapper from '@/components/PageWrapper';
 import Navbar from '@/components/common/Navbar';
 import Footer from '@/components/common/Footer';
 import products from '@/data/products';
@@ -29,8 +29,8 @@ export default function ProductsPage() {
     });
 
   return (
-    <PageWrapper>
-        <Navbar />
+    <>
+     <Navbar />
       <div className="relative py-36 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-sky-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
           <div className="wave-container">
@@ -89,6 +89,6 @@ export default function ProductsPage() {
         </div>
       </div>
         <Footer />
-    </PageWrapper>
+    </> 
   );
 }
