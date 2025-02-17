@@ -1,14 +1,36 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, LogOut, User, Settings, ChevronDown, Home, Info, Package, Users, Globe, Mail, X } from 'lucide-react';
 import { useTheme } from '@/components/context/ThemeContext';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,11 +40,20 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const menuItems = [
+    { name: 'home', icon: Home, href: '/' },
+    { name: 'about', icon: Info, href: '/about' },
+    { name: 'products', icon: Package, href: '/products' },
+    { name: 'partners', icon: Users, href: '/partners' },
+    { name: 'community', icon: Globe, href: '/community' },
+    { name: 'contact', icon: Mail, href: '/contact' },
+  ];
+
   return (
     <motion.nav
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`fixed w-full z-50 transition-all duration-300 ${
+      className={`fixed w-full z-[100] transition-all duration-300 ${
         isScrolled 
           ? 'dark:bg-gray-900/90 bg-white/90 backdrop-blur-md shadow-lg' 
           : 'bg-transparent'
@@ -41,13 +72,13 @@ const Navbar = () => {
           
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            {['home', 'about', 'products', 'partners', 'community', 'contact'].map((item) => (
+            {menuItems.map((item) => (
               <Link
-                key={item}
-                href={item === 'home' ? '/' : `/${item}`}
+                key={item.name}
+                href={item.href}
                 className="relative group text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
               >
-                <span className="capitalize">{item}</span>
+                <span className="capitalize">{item.name}</span>
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-teal-500 group-hover:w-full transition-all duration-300"/>
               </Link>
             ))}
@@ -64,13 +95,60 @@ const Navbar = () => {
               )}
             </button>
 
-            <Link 
-              href="/login"
-              className="relative overflow-hidden px-6 py-2 rounded-md group bg-gradient-to-r from-blue-600 to-teal-500 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
+            {user ? (
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-300"
             >
-              <span className="relative z-10">Login</span>
-              <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-700 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </Link>
+              <span className="text-gray-700 dark:text-gray-300">{user.username}</span>
+              <ChevronDown className="h-4 w-4 text-gray-500" />
+            </button>
+
+            <AnimatePresence>
+              {isDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="absolute right-0 mt-2 w-48 rounded-lg bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+                >
+                  {user.role === 'ADMIN' && (
+                    <Link
+                      href="/admin"
+                      className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-300"
+                    >
+                      <Settings className="h-4 w-4" />
+                      Dashboard
+                    </Link>
+                  )}
+                  <Link
+                    href="/profile"
+                    className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-300"
+                  >
+                    <User className="h-4 w-4" />
+                    Profile
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all duration-300"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        ) : (
+          <Link 
+            href="/login"
+            className="relative overflow-hidden px-6 py-2 rounded-md group bg-gradient-to-r from-blue-600 to-teal-500 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
+          >
+            <span className="relative z-10">Login</span>
+            <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-700 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          </Link>
+        )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -118,52 +196,115 @@ const Navbar = () => {
             {/* Mobile Menu */}
             <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden bg-gradient-to-b from-white/95 to-blue-50/95 dark:from-gray-900/95 dark:to-gray-800/95 backdrop-blur-lg border-t border-blue-100 dark:border-gray-700"
-          >
-            <div className="px-4 py-6 space-y-4">
-              {/* Theme Toggle in Mobile - unchanged */}
-
-              {/* Navigation Links */}
-              {['home', 'about', 'products', 'partners', 'community', 'contact'].map((item) => (
-                <motion.div
-                  key={item}
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: -20, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <Link
-                    href={item === 'home' ? '/' : `/${item}`}
-                    className="block px-4 py-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg bg-white/50 dark:bg-gray-800/50 hover:bg-blue-50 dark:hover:bg-gray-700/50 transition-all duration-300"
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/20 dark:bg-black/40 backdrop-blur-sm md:hidden z-[90]"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: "spring", damping: 20, stiffness: 100 }}
+              className="fixed right-0 top-0 bottom-0 w-[280px] md:hidden bg-white dark:bg-gray-900 shadow-2xl z-[100] max-h-screen overflow-y-auto overscroll-y-contain"
+              style={{ height: '100dvh' }}
+            >
+              <div className="flex flex-col h-full relative">
+                <div className="sticky top-0 z-20 flex items-center justify-between p-5 border-b dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md">
+                  <span className="text-lg font-semibold bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">
+                    Menu
+                  </span>
+                  <button
                     onClick={() => setIsMobileMenuOpen(false)}
+                    className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                   >
-                    <span className="capitalize">{item}</span>
-                  </Link>
-                </motion.div>
-              ))}
+                    <X className="h-5 w-5 text-gray-500" />
+                  </button>
+                </div>
 
-              {/* Login Button in Mobile */}
-              <motion.div
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: -20, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Link
-                  href="/login"
-                  className="block px-4 py-3 text-white bg-gradient-to-r from-blue-600 to-teal-500 rounded-lg hover:from-blue-700 hover:to-teal-600 transition-all duration-300"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Login
-                </Link>
-              </motion.div>
-            </div>
-          </motion.div>
+                <div className="flex-1 overflow-y-auto py-4 px-3">
+                  <div className="space-y-2">
+                    {menuItems.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <motion.div
+                          key={item.name}
+                          initial={{ x: 20, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          exit={{ x: 20, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <Link
+                            href={item.href}
+                            className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r from-blue-50 to-teal-50 dark:hover:bg-gray-800/50 transition-all duration-300"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            <Icon className="h-5 w-5 text-blue-500" />
+                            <span className="capitalize">{item.name}</span>
+                          </Link>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="mt-6 px-3">
+                    <div className="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-700 to-transparent" />
+                  </div>
+
+                  <div className="mt-6 px-3 space-y-3">
+                    {user ? (
+                      <>
+                        <div className="px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+                          <p className="text-sm text-gray-600 dark:text-gray-400">Signed in as</p>
+                          <p className="font-medium text-gray-900 dark:text-gray-100">{user.username}</p>
+                        </div>
+                        {user.role === 'ADMIN' && (
+                          <Link
+                            href="/admin"
+                            className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all duration-300"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            <Settings className="h-5 w-5 text-blue-500" />
+                            Dashboard
+                          </Link>
+                        )}
+                        <Link
+                          href="/profile"
+                          className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all duration-300"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          <User className="h-5 w-5 text-blue-500" />
+                          Profile
+                        </Link>
+                        <button
+                          onClick={() => {
+                            handleLogout();
+                            setIsMobileMenuOpen(false);
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all duration-300"
+                        >
+                          <LogOut className="h-5 w-5" />
+                          Logout
+                        </button>
+                      </>
+                    ) : (
+                      <Link
+                        href="/login"
+                        className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-blue-600 to-teal-500 text-white hover:from-blue-700 hover:to-teal-600 transition-all duration-300"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <User className="h-5 w-5" />
+                        Login
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </motion.nav>

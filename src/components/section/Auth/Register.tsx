@@ -3,6 +3,10 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Loader2, Mail, User, Lock, Phone } from 'lucide-react';
 import Link from 'next/link';
+import { register } from '@/services/auth';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,14 +17,24 @@ export default function Register() {
     password: '',
     phone: ''
   });
+  const { setAuth } = useAuth();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Handle register logic here
-    setTimeout(() => setIsLoading(false), 2000);
+    
+    try {
+      const response = await register(formData);
+      setAuth(response.user, response.token);
+      toast.success('Registration successful!');
+      router.push('/');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Registration failed');
+    } finally {
+      setIsLoading(false);
+    }
   };
-
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden py-20">
       {/* Background with waves */}

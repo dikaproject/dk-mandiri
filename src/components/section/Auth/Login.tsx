@@ -3,6 +3,10 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Loader2, User, Lock } from 'lucide-react';
 import Link from 'next/link';
+import { login } from '@/services/auth';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -11,14 +15,24 @@ export default function Login() {
     login: '',
     password: ''
   });
+  const { setAuth } = useAuth();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Handle login logic here
-    setTimeout(() => setIsLoading(false), 2000);
+    
+    try {
+      const response = await login(formData);
+      setAuth(response.user, response.token);
+      toast.success('Login successful!');
+      router.push('/');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Login failed');
+    } finally {
+      setIsLoading(false);
+    }
   };
-
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
       {/* Background with waves */}
