@@ -13,16 +13,18 @@ import {
   MoonIcon,
   ArrowLeftOnRectangleIcon,
   ChevronLeftIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  HomeIcon
 } from '@heroicons/react/24/outline';
 import { useTheme } from '@/components/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 
 const navigation = [
-  { name: 'Analytics', href: '/admin', icon: ChartPieIcon },
-  { name: 'Product Category', href: '/admin/categories', icon: TagIcon },
-  { name: 'Product Management', href: '/admin/products', icon: CubeIcon },
-  { name: 'User Management', href: '/admin/users', icon: UsersIcon },
+  { name: 'Dashboard', href: '/admin', icon: HomeIcon },
+  { name: 'Analytics', href: '/admin/analytics', icon: ChartPieIcon },
+  { name: 'Product Category', href: '/admin/category', icon: TagIcon },
+  { name: 'Product Management', href: '/admin/product', icon: CubeIcon },
+  { name: 'User Management', href: '/admin/user', icon: UsersIcon },
   { name: 'Transaction Management', href: '/admin/transactions', icon: ShoppingCartIcon },
 ];
 

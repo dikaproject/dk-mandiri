@@ -4,20 +4,25 @@ import { createContext, useContext, useEffect, useState } from 'react';
 type ThemeContextType = {
   theme: string;
   toggleTheme: () => void;
+  isClient: boolean;
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState('light');
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'light';
+    setIsClient(true);
+    const savedTheme = localStorage.getItem('theme') || 
+                      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     setTheme(savedTheme);
     document.documentElement.classList.toggle('dark', savedTheme === 'dark');
   }, []);
 
   const toggleTheme = () => {
+    if (!isClient) return;
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
@@ -25,7 +30,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, isClient }}>
       {children}
     </ThemeContext.Provider>
   );

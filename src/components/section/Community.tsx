@@ -58,12 +58,7 @@ const Community = () => {
     <section className="relative py-36 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-sky-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-        <div className="wave-container">
-          <div className="wave wave1" />
-          <div className="wave wave2" />
-          <div className="wave wave3" />
-        </div>
-      </div>
+</div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div

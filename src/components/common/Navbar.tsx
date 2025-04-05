@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sun, Moon, LogOut, User, Settings, ChevronDown, Home, Info, Package, Users, Globe, Mail, X } from 'lucide-react';
+import { Sun, Moon, LogOut, User, Settings, ChevronDown, Home, Info, Package, Users, Globe, Mail, X, ShoppingCart } from 'lucide-react';
 import { useTheme } from '@/components/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -43,7 +43,7 @@ const Navbar = () => {
   const menuItems = [
     { name: 'home', icon: Home, href: '/' },
     { name: 'about', icon: Info, href: '/about' },
-    { name: 'products', icon: Package, href: '/products' },
+    { name: 'products', icon: Package, href: '/product' },
     { name: 'partners', icon: Users, href: '/partners' },
     { name: 'community', icon: Globe, href: '/community' },
     { name: 'contact', icon: Mail, href: '/contact' },
@@ -53,23 +53,22 @@ const Navbar = () => {
     <motion.nav
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`fixed w-full z-[100] transition-all duration-300 ${
-        isScrolled 
-          ? 'dark:bg-gray-900/90 bg-white/90 backdrop-blur-md shadow-lg' 
+      className={`fixed w-full z-[100] transition-all duration-300 ${isScrolled
+          ? 'dark:bg-gray-900/90 bg-white/90 backdrop-blur-md shadow-lg'
           : 'bg-transparent'
-      }`}
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent hover:from-blue-700 hover:to-teal-600 transition-all duration-300"
             >
               DK-Mandiri
             </Link>
           </div>
-          
+
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
             {menuItems.map((item) => (
@@ -79,7 +78,7 @@ const Navbar = () => {
                 className="relative group text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300"
               >
                 <span className="capitalize">{item.name}</span>
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-teal-500 group-hover:w-full transition-all duration-300"/>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-teal-500 group-hover:w-full transition-all duration-300" />
               </Link>
             ))}
 
@@ -95,60 +94,71 @@ const Navbar = () => {
               )}
             </button>
 
-            {user ? (
-          <div className="relative" ref={dropdownRef}>
-            <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-300"
+            {/* Cart Button */}
+            <Link
+              href="/cart"
+              className="flex items-center gap-1 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors relative"
             >
-              <span className="text-gray-700 dark:text-gray-300">{user.username}</span>
-              <ChevronDown className="h-4 w-4 text-gray-500" />
-            </button>
+              <ShoppingCart className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">0</span>
+            </Link>
 
-            <AnimatePresence>
-              {isDropdownOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  className="absolute right-0 mt-2 w-48 rounded-lg bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+            {user ? (
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-300"
                 >
-                  {user.role === 'ADMIN' && (
-                    <Link
-                      href="/admin"
-                      className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-300"
+                  <span className="text-gray-700 dark:text-gray-300">{user.username}</span>
+                  <ChevronDown className="h-4 w-4 text-gray-500" />
+                </button>
+
+                <AnimatePresence>
+                  {isDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="absolute right-0 mt-2 w-48 rounded-lg bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
                     >
-                      <Settings className="h-4 w-4" />
-                      Dashboard
-                    </Link>
+                      {user.role === 'ADMIN' && (
+                        <Link
+                          href="/admin"
+                          className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-300"
+                        >
+                          <Settings className="h-4 w-4" />
+                          Dashboard
+                        </Link>
+                      )}
+                      <Link
+                        href="/profile"
+                        className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-300"
+                      >
+                        <User className="h-4 w-4" />
+                        Profile
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-2 px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all duration-300"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Logout
+                      </button>
+                    </motion.div>
                   )}
-                  <Link
-                    href="/profile"
-                    className="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-300"
-                  >
-                    <User className="h-4 w-4" />
-                    Profile
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-2 px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all duration-300"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    Logout
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        ) : (
-          <Link 
-            href="/login"
-            className="relative overflow-hidden px-6 py-2 rounded-md group bg-gradient-to-r from-blue-600 to-teal-500 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
-          >
-            <span className="relative z-10">Login</span>
-            <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-700 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          </Link>
-        )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <>
+              <Link
+                href="/login"
+                className="relative overflow-hidden px-6 py-2 rounded-md group bg-gradient-to-r from-blue-600 to-teal-500 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
+              >
+                <span className="relative z-10">Login</span>
+                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-700 to-teal-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </Link>
+              </>     
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -193,8 +203,8 @@ const Navbar = () => {
         </div>
       </div>
 
-            {/* Mobile Menu */}
-            <AnimatePresence>
+      {/* Mobile Menu */}
+      <AnimatePresence>
         {isMobileMenuOpen && (
           <>
             <motion.div
@@ -248,6 +258,26 @@ const Navbar = () => {
                         </motion.div>
                       );
                     })}
+                  </div>
+
+                  {/* Add Cart Link in Mobile Menu */}
+                  <div className="mt-2">
+                    <motion.div
+                      initial={{ x: 20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      exit={{ x: 20, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Link
+                        href="/cart"
+                        className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r from-blue-50 to-teal-50 dark:hover:bg-gray-800/50 transition-all duration-300"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <ShoppingCart className="h-5 w-5 text-blue-500" />
+                        <span>Shopping Cart</span>
+                        <div className="ml-auto bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</div>
+                      </Link>
+                    </motion.div>
                   </div>
 
                   <div className="mt-6 px-3">

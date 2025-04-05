@@ -23,12 +23,28 @@ export default function Login() {
     setIsLoading(true);
     
     try {
+      // Validate data format before sending
+      if (!formData.login.trim()) {
+        throw new Error('Email or username is required');
+      }
+      
+      if (!formData.password) {
+        throw new Error('Password is required');
+      }
+      
       const response = await login(formData);
-      setAuth(response.user, response.token);
-      toast.success('Login successful!');
-      router.push('/');
+      console.log('Login response:', response); // Debug log
+      
+      if (response && response.token && response.user) {
+        setAuth(response.user, response.token);
+        toast.success('Login successful!');
+        router.push('/');
+      } else {
+        throw new Error('Invalid response format from server');
+      }
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Login failed');
+      console.error('Login error:', error);
+      toast.error(error.response?.data?.message || error.message || 'Login failed');
     } finally {
       setIsLoading(false);
     }
@@ -37,11 +53,6 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
       {/* Background with waves */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-sky-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-        <div className="wave-container">
-          <div className="wave wave1" />
-          <div className="wave wave2" />
-          <div className="wave wave3" />
-        </div>
       </div>
 
       <motion.div
@@ -69,6 +80,7 @@ export default function Login() {
                   <User className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
+                placeholder="Email or Username"
                   type="text"
                   value={formData.login}
                   onChange={(e) => setFormData({ ...formData, login: e.target.value })}
@@ -87,6 +99,7 @@ export default function Login() {
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
+                  placeholder="Password"
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}

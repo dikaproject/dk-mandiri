@@ -51,12 +51,7 @@ const ContactSection = () => {
     <section className="relative min-h-screen py-36 overflow-hidden">
       {/* Background with enhanced waves */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-sky-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-        <div className="wave-container opacity-50">
-          <div className="wave wave1" />
-          <div className="wave wave2" />
-          <div className="wave wave3" />
-        </div>
-      </div>
+</div>
 
       {/* Floating Elements */}
       {[...Array(5)].map((_, i) => (

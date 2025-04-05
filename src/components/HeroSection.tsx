@@ -2,23 +2,35 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Fish, Timer, Award } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 const HeroSection = () => {
+    // State to store bubble positions
+    const [bubbles, setBubbles] = useState<Array<{
+      left: string;
+      delay: number;
+      duration: number;
+    }>>([]);
+
+    // Generate bubbles only on the client side
+    useEffect(() => {
+      const newBubbles = [...Array(20)].map(() => ({
+        left: `${Math.random() * 100}%`,
+        delay: Math.random() * 10,
+        duration: Math.random() * 10 + 15
+      }));
+      setBubbles(newBubbles);
+    }, []);
+
     return (
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden py-20">
         {/* Ocean-themed Background with Custom Waves - Updated dark mode gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-sky-50 via-blue-50 to-white dark:from-gray-900 dark:via-cyan-950 dark:to-blue-950">
-          <div className="wave-container">
-            <div className="wave wave1 dark:opacity-20" />
-            <div className="wave wave2 dark:opacity-15" />
-            <div className="wave wave3 dark:opacity-10" />
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-br from-cyan-100/20 via-transparent to-transparent dark:from-cyan-900/20"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-sky-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         </div>
 
         {/* Updated floating bubbles for dark mode */}
         <div className="absolute inset-0 overflow-hidden">
-          {[...Array(20)].map((_, i) => (
+          {bubbles.map((bubble, i) => (
             <motion.div
               key={i}
               className="absolute h-2 w-2 bg-gradient-to-r from-cyan-400 to-blue-400 dark:from-cyan-600 dark:to-blue-600 rounded-full"
@@ -28,13 +40,13 @@ const HeroSection = () => {
                 y: ['100%', '0%'],
               }}
               transition={{
-                duration: Math.random() * 10 + 15,
+                duration: bubble.duration,
                 repeat: Infinity,
                 ease: 'easeInOut',
-                delay: Math.random() * 10,
+                delay: bubble.delay,
               }}
               style={{
-                left: `${Math.random() * 100}%`,
+                left: bubble.left,
                 top: '100%',
               }}
             />
@@ -78,7 +90,7 @@ const HeroSection = () => {
               className="flex flex-col sm:flex-row gap-6 justify-center"
             >
               <Link
-                href="/products"
+                href="/product"
                 className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-medium overflow-hidden rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 text-white transition-all hover:scale-105"
               >
                 <span className="absolute w-0 h-0 transition-all duration-300 ease-out bg-white rounded-full group-hover:w-32 group-hover:h-32 opacity-10"></span>
