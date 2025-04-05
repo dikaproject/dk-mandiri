@@ -29,10 +29,21 @@ const HowToOrder = () => {
   };
 
   return (
-    <section className="relative py-20 overflow-hidden">
+    <section 
+      className="relative py-20 overflow-hidden" 
+      id="order-process"
+      aria-labelledby="order-process-heading"
+      itemScope 
+      itemType="https://schema.org/HowTo"
+    >
+      {/* Hidden SEO metadata */}
+      <meta itemProp="name" content="Cara Memesan Ikan Segar dari DK Mandiri Seafood" />
+      <meta itemProp="description" content="Panduan lengkap cara memesan ikan segar dari DK Mandiri Seafood, tersedia pengiriman online dan pengambilan di toko." />
+      <meta itemProp="totalTime" content="PT30M" />
+      
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-sky-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-</div>
+      </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
@@ -44,16 +55,20 @@ const HowToOrder = () => {
         >
           {/* Header */}
           <motion.div variants={itemVariants} className="text-center space-y-4">
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-gray-100">
-            Bagaimana cara memesan
+            <h2 
+              id="order-process-heading" 
+              className="text-4xl font-bold text-gray-900 dark:text-gray-100"
+              itemProp="name"
+            >
+              Bagaimana cara memesan
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Pilih cara yang Anda inginkan untuk memesan
+            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto" itemProp="description">
+              Pilih cara yang Anda inginkan untuk memesan
             </p>
           </motion.div>
 
           {/* Tab Buttons */}
-          <div className="flex justify-center gap-4">
+          <div className="flex justify-center gap-4" role="tablist" aria-label="Metode pemesanan">
             <button
               onClick={() => setActiveTab('online')}
               className={`px-6 py-3 rounded-lg flex items-center gap-2 transition-all ${
@@ -61,8 +76,12 @@ const HowToOrder = () => {
                   ? 'bg-cyan-600 text-white shadow-lg scale-105'
                   : 'bg-white/50 dark:bg-gray-800/50 text-cyan-600 dark:text-cyan-400 hover:bg-white/80 dark:hover:bg-gray-700/80'
               }`}
+              role="tab"
+              aria-selected={activeTab === 'online'}
+              aria-controls="online-panel"
+              id="online-tab"
             >
-              <Truck className="h-5 w-5" />
+              <Truck className="h-5 w-5" aria-hidden="true" />
               <span>Pengiriman Online</span>
             </button>
             <button
@@ -72,8 +91,12 @@ const HowToOrder = () => {
                   ? 'bg-cyan-600 text-white shadow-lg scale-105'
                   : 'bg-white/50 dark:bg-gray-800/50 text-cyan-600 dark:text-cyan-400 hover:bg-white/80 dark:hover:bg-gray-700/80'
               }`}
+              role="tab"
+              aria-selected={activeTab === 'offline'}
+              aria-controls="offline-panel"
+              id="offline-tab"
             >
-              <Store className="h-5 w-5" />
+              <Store className="h-5 w-5" aria-hidden="true" />
               <span>Pengambilan Di Toko</span>
             </button>
           </div>
@@ -86,29 +109,51 @@ const HowToOrder = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
+            id={`${activeTab}-panel`}
+            role="tabpanel"
+            aria-labelledby={`${activeTab}-tab`}
           >
             <div className="rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm p-8 border border-gray-200 dark:border-gray-700 shadow-lg">
               <div className="space-y-6">
                 <div className="flex items-center gap-3">
                   {activeTab === 'online' ? (
-                    <Truck className="h-8 w-8 text-cyan-600 dark:text-cyan-400" />
+                    <Truck className="h-8 w-8 text-cyan-600 dark:text-cyan-400" aria-hidden="true" />
                   ) : (
-                    <Store className="h-8 w-8 text-cyan-600 dark:text-cyan-400" />
+                    <Store className="h-8 w-8 text-cyan-600 dark:text-cyan-400" aria-hidden="true" />
                   )}
                   <h3 className="text-2xl font-semibold text-cyan-900 dark:text-cyan-100">
                     {activeTab === 'online' ? 'Online Delivery' : 'Store Pickup'}
                   </h3>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-4" itemProp="step" itemScope itemType="https://schema.org/HowToSection">
                   {(activeTab === 'online' ? onlineSteps : offlineSteps).map((step, index) => (
-                    <div key={index} className="flex gap-4">
+                    <div 
+                      key={index} 
+                      className="flex gap-4"
+                      itemProp={index === 0 ? "itemListElement" : undefined} 
+                      itemScope={index === 0} 
+                      itemType={index === 0 ? "https://schema.org/HowToStep" : undefined}
+                    >
                       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-cyan-100 flex items-center justify-center text-cyan-700 font-semibold">
                         {index + 1}
                       </div>
                       <div>
-                        <h4 className="font-medium text-gray-900 dark:text-gray-100">{step.title}</h4>
-                        <p className="text-gray-600 dark:text-gray-300">{step.description}</p>
+                        <h4 
+                          className="font-medium text-gray-900 dark:text-gray-100"
+                          itemProp={index === 0 ? "name" : undefined}
+                        >
+                          {step.title}
+                        </h4>
+                        <p 
+                          className="text-gray-600 dark:text-gray-300"
+                          itemProp={index === 0 ? "text" : undefined}
+                        >
+                          {step.description}
+                        </p>
+                        {index === 0 && (
+                          <meta itemProp="position" content="1" />
+                        )}
                       </div>
                     </div>
                   ))}
@@ -118,16 +163,16 @@ const HowToOrder = () => {
                   <div className="flex items-center gap-2 text-cyan-700">
                     {activeTab === 'online' ? (
                       <>
-                        <AlertCircle className="h-5 w-5" />
+                        <AlertCircle className="h-5 w-5" aria-hidden="true" />
                         <p className="text-sm font-medium">
-                        Pengiriman tersedia dalam radius 20 km untuk jaminan kesegaran
+                          Pengiriman tersedia dalam radius 20 km untuk jaminan kesegaran
                         </p>
                       </>
                     ) : (
                       <>
-                        <Clock className="h-5 w-5" />
+                        <Clock className="h-5 w-5" aria-hidden="true" />
                         <p className="text-sm font-medium">
-                        Silakan ambil dalam waktu 1-2 jam setelah pemesanan
+                          Silakan ambil dalam waktu 1-2 jam setelah pemesanan
                         </p>
                       </>
                     )}

@@ -327,15 +327,20 @@ export default function TransactionsPage() {
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   {paginatedTransactions.map((transaction) => (
-                    <tr key={transaction.id} className="hover:bg-gray-50 dark:hover:bg-gray-750">
+                    <tr key={transaction.id} className=" dark:hover:bg-gray-750">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex flex-col">
                           <div className="text-sm font-medium text-gray-900 dark:text-white">
                             {transaction.id.slice(0, 8)}...
                           </div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {transaction.order.user.name}
-                          </div>
+          {transaction.order.user.name || 'Walk-in Customer'}
+        </div>
+        {transaction.order.orderType === 'OFFLINE' && (
+          <div className="text-xs italic text-gray-400 dark:text-gray-500">
+            POS Transaction
+          </div>
+        )}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">

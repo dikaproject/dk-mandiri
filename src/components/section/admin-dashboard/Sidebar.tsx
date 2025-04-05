@@ -26,6 +26,8 @@ const navigation = [
   { name: 'Product Management', href: '/admin/product', icon: CubeIcon },
   { name: 'User Management', href: '/admin/user', icon: UsersIcon },
   { name: 'Transaction Management', href: '/admin/transactions', icon: ShoppingCartIcon },
+  { name: 'POS Management', href: '/admin/pos', icon: ShoppingCartIcon },
+  { name: 'Back To Home', href: '/', icon: HomeIcon },
 ];
 
 export default function Sidebar() {

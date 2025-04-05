@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://dk-mandiri-preview.vercel.app/'),
+  metadataBase: new URL('https://dkmandiri.id'),
   title: {
     default: "DK Mandiri Seafood | Supplier Ikan Segar Terpercaya di Cilacap",
     template: "%s | DK Mandiri Seafood"
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'id_ID',
-    url: 'https://dk-mandiri-preview.vercel.app/',
+    url: 'https://dkmandiri.id',
     siteName: 'DK Mandiri Seafood',
     title: 'DK Mandiri Seafood - Supplier Ikan Segar Terpercaya di Cilacap',
     description: 'Supplier ikan segar berkualitas di Cilacap. Menyediakan berbagai jenis ikan segar dan seafood dengan harga terbaik.',
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     images: ['/og-image.jpg'],
   },
   alternates: {
-    canonical: 'https://dk-mandiri-preview.vercel.app/',
+    canonical: 'https://dkmandiri.id',
   },
   verification: {
     google: 'your-google-verification-code',

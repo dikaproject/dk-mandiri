@@ -47,6 +47,7 @@ const Navbar = () => {
     { name: 'partners', icon: Users, href: '/partners' },
     { name: 'community', icon: Globe, href: '/community' },
     { name: 'contact', icon: Mail, href: '/contact' },
+    { name: 'assistant', icon: Globe, href: '/assistant' },
   ];
 
   return (

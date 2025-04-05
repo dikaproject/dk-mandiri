@@ -28,6 +28,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.2",
+    "react-schemaorg": "^2.0.0",
     "react-to-print": "^3.0.5",
     "tailwind-merge": "^3.1.0"
   },

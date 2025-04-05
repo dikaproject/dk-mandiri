@@ -17,6 +17,16 @@ export const getAllTransactions = async (): Promise<Transaction[]> => {
   return response.data;
 };
 
+export const sendPOSReceipt = async (transactionId: string): Promise<{message: string}> => {
+  try {
+    const response = await api.post(`/pos/send-receipt/${transactionId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error sending receipt:', error);
+    throw error;
+  }
+};
+
 // Update transaction status
 export const updateTransactionStatus = async (
   transactionId: string, 
