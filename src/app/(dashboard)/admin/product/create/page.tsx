@@ -9,7 +9,10 @@ import {
   Upload, 
   X, 
   Image as ImageIcon,
-  CheckCircle2
+  CheckCircle2,
+  Trash2,
+  Star,
+  Camera
 } from 'lucide-react';
 import { createProduct, uploadProductImage } from '@/services/product';
 import { getAllCategories } from '@/services/category';
@@ -524,7 +527,99 @@ export default function CreateProductPage() {
               </div>
 
               {/* Image Upload - remains the same */}
-              {/* ... Keep the existing image upload code ... */}
+              <div className="md:col-span-2 mt-6">
+  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+    Product Images <span className="text-red-500">*</span>
+  </label>
+  
+  {/* File input */}
+  <div className="mt-2 flex items-center">
+    <label className="flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer">
+      <Camera className="h-5 w-5 mr-2" />
+      <span>Add Images</span>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+        onChange={handleFileChange}
+        multiple
+        className="sr-only"
+      />
+    </label>
+  </div>
+  
+  {/* Selected images preview */}
+  {previewImages.length > 0 && (
+    <div className="mt-4">
+      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Selected Images</h4>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        {previewImages.map((src, index) => (
+          <div key={index} className="relative group">
+            <div className={`relative aspect-square rounded-md overflow-hidden border-2 ${
+              primaryImageIndex === index 
+                ? 'border-blue-500 dark:border-blue-400' 
+                : 'border-gray-200 dark:border-gray-700'
+            }`}>
+              <Image
+                src={src}
+                alt={`Preview ${index + 1}`}
+                fill
+                sizes="(max-width: 768px) 100vw, 300px"
+                className="object-cover"
+              />
+              
+              {/* Primary badge */}
+              {primaryImageIndex === index && (
+                <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                  Primary
+                </div>
+              )}
+            </div>
+            
+            {/* Image controls */}
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <button
+                type="button"
+                onClick={() => setPrimaryImage(index)}
+                className="p-1 bg-blue-500 text-white rounded-full mr-2"
+                disabled={primaryImageIndex === index}
+                title="Set as primary image"
+              >
+                <Star size={16} />
+              </button>
+              <button
+                type="button"
+                onClick={() => removeImage(index)}
+                className="p-1 bg-red-500 text-white rounded-full"
+                title="Remove image"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+  
+  {/* Empty state */}
+  {previewImages.length === 0 && (
+    <div className="mt-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-md p-6 text-center">
+      <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
+      <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+        No images selected yet
+      </p>
+      <p className="text-xs text-gray-400 dark:text-gray-500">
+        Upload at least one product image
+      </p>
+    </div>
+  )}
+  
+  {/* Error message */}
+  {errors.images && (
+    <p className="mt-1 text-sm text-red-500">{errors.images}</p>
+  )}
+</div>
             </div>
 
             <div className="mt-8 flex justify-end space-x-3">
