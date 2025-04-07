@@ -1,6 +1,24 @@
 import api from './api';
 import { Transaction, VerifyPaymentData } from '@/types/transaction';
 
+// Get transaction by ID
+export const getTransactionById = async (transactionId: string): Promise<Transaction> =>{
+  const response = await api.get(`/transaction/${transactionId}`);
+  return response.data;
+}
+
+export const updateOrderStatusFromTransaction = async (
+  transactionId: string,
+  orderStatus: string,
+  data: { staffName: string, notes: string }
+): Promise<any> => {
+  const response = await api.put(`/transaction/${transactionId}/update-order`, {
+    orderStatus,
+    ...data
+  });
+  return response.data;
+};
+
 export const createTransaction = async (transactionData: any) => {
   try {
     const response = await api.post('/pos/transaction', transactionData);

@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from '../components/context/ThemeContext';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from '@/context/AuthContext';
+import ChatAssistant from '@/components/ChatAssistant';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -101,6 +102,7 @@ export default function RootLayout({
             {children}
           </ThemeProvider>
         </AuthProvider>
+        <ChatAssistant />
       </body>
     </html>
   );
