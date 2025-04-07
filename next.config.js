@@ -1,20 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['localhost', 'res.cloudinary.com', 'dkmandiri.id'],
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'dkmandiri.id',
-        port: '',
-        pathname: '/api/uploads/**',
-      },
-    ],
+    domains: ['localhost', 'dkmandiri.id']
   },
   
   eslint: {
     // This allows builds to complete even with ESLint errors
     ignoreDuringBuilds: true,
+    dirs: ['pages', 'components', 'lib', 'src'],
   },
   typescript: {
     // This will ignore TypeScript errors during build
