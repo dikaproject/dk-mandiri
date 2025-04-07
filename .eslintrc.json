@@ -1,0 +1,4 @@
+{
+  "extends": "next",
+  "rules": {}  // Empty rules object disables all rules
+}
