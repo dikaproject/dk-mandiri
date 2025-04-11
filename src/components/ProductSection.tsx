@@ -130,6 +130,7 @@ const ProductSection = () => {
                       itemProp="image"
                       loading="lazy"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                      unoptimized
                     />
                     {/* Trending Badge */}
                     <div className="absolute top-4 right-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-3 py-1 rounded-full">

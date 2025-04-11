@@ -492,6 +492,7 @@ export default function TransactionDetailPage() {
                               fill
                               sizes="48px"
                               className="object-cover"
+                              unoptimized
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
@@ -739,6 +740,7 @@ export default function TransactionDetailPage() {
                 fill
                 className="object-contain rounded-md"
                 onLoad={handleImageLoad}
+                unoptimized
               />
             </div>
             <div className="mt-4 flex justify-end">

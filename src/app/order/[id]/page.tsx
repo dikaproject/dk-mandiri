@@ -213,6 +213,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                                                         alt={item.productName}
                                                         fill
                                                         className="object-cover"
+                                                        unoptimized
                                                     />
                                                 </div>
                                                 
@@ -304,6 +305,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                                                             alt="Bukti Pembayaran"
                                                             fill
                                                             className="object-contain"
+                                                            unoptimized
                                                         />
                                                     </div>
                                                 </div>

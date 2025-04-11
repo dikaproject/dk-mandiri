@@ -600,6 +600,7 @@ const handlePasswordChange = async (e: React.FormEvent) => {
                                       alt={item.product.name} 
                                       fill
                                       className="object-cover"
+                                      unoptimized
                                     />
                                   ) : (
                                     <div className="flex items-center justify-center h-full w-full">
