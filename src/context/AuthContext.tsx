@@ -6,6 +6,7 @@ import { setCookie, deleteCookie } from 'cookies-next';
 interface AuthContextType {
   user: User | null;
   token: string | null;
+  updateUser: (userData: User) => void;
   setAuth: (user: User, token: string) => void;
   logout: () => void;
   isLoading: boolean;
@@ -61,8 +62,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateUser = (userData: User) => {
+    localStorage.setItem('user', JSON.stringify(userData));
+    setUser(userData);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, setAuth, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, token, setAuth, logout, isLoading, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

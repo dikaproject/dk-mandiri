@@ -30,6 +30,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             alt={product.name}
             fill
             className="object-cover transform group-hover:scale-110 transition-transform duration-500"
+            unoptimized
           />
           
           {/* Category badge */}

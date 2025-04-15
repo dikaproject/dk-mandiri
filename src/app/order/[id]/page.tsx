@@ -1,425 +1,526 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { toast } from 'react-hot-toast';
-import {
-  ArrowLeft,
-  ArrowRight,
-  Calendar,
-  Loader2,
-  X,
-  FileText,
-  Search,
-  ImageIcon,
-  Download
-} from 'lucide-react';
+import Link from 'next/link';
+import { toast, Toaster } from 'react-hot-toast';
+import { Loader2, AlertTriangle, ArrowLeft, Truck, ExternalLink, Clock, Check, Copy } from 'lucide-react';
+import { getOrderDetails } from '@/services/order';
+import { formatToIDR } from '@/utils/formatter';
+import { useAuth } from '@/context/AuthContext';
+import Navbar from '@/components/common/Navbar';
+import Footer from '@/components/common/Footer';
+import axios from 'axios';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { getAllTransactions, sendReceipt } from '@/services/transaction';
-import { Transaction, TransactionStatus } from '@/types/transaction';
+// Status badge component
+const StatusBadge = ({ status }: { status: string }) => {
+    let color = '';
+    let label = '';
 
-export default function TransactionsPage() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [filterStatus, setFilterStatus] = useState<string>('');
-  const [filterType, setFilterType] = useState<string>(''); // FIXED: this was using setFilterStatus duplicate
-  const [dateRange, setDateRange] = useState<{start: string, end: string}>({ 
-    start: '', 
-    end: new Date().toISOString().split('T')[0]
-  });
-  const [previewModal, setPreviewModal] = useState<{isOpen: boolean, imageUrl: string | null}>({
-    isOpen: false,
-    imageUrl: null
-  });
+    switch (status) {
+        case 'PENDING':
+            color = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-500';
+            label = 'Menunggu Pembayaran';
+            break;
+        case 'PROCESSING':
+            color = 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-500';
+            label = 'Diproses';
+            break;
+        case 'SHIPPED':
+            color = 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-500';
+            label = 'Dikirim';
+            break;
+        case 'DELIVERED':
+            color = 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-500';
+            label = 'Selesai';
+            break;
+        case 'CANCELLED':
+            color = 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-500';
+            label = 'Dibatalkan';
+            break;
+        default:
+            color = 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-500';
+            label = status;
+    }
+
+    return (
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${color}`}>
+            {label}
+        </span>
+    );
+};
+
+export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> | { id: string } }) {
+    // Unwrap params with React.use() if it's a Promise
+    const resolvedParams = params instanceof Promise ? use(params) : params;
+    const { id } = resolvedParams;
+    const router = useRouter();
+    const { user, isLoading: authLoading } = useAuth();
+    const [orderDetails, setOrderDetails] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [copied, setCopied] = useState<string | null>(null);
   
-  const itemsPerPage = 10;
-  const router = useRouter();
+    // Fetch order details
+    useEffect(() => {
+      const fetchOrderDetails = async () => {
+        try {
+          if (authLoading) return;
+          if (!user) {
+            router.push(`/login?redirect=/order/${id}`);
+            return;
+          }
+  
+          setIsLoading(true);
+          const data = await getOrderDetails(id);
+          setOrderDetails(data);
+        } catch (error) {
+          console.error('Failed to fetch order details:', error);
+          
+          // Check if it's an authentication error (403)
+          if (axios.isAxiosError(error) && error.response?.status === 403) {
+            setError('You do not have permission to view this order.');
+            toast.error('You do not have permission to view this order');
+          } else {
+            setError('Failed to load order details. Please try again.');
+            toast.error('Failed to load order details');
+          }
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
-  // Fetch transactions
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        setIsLoading(true);
-        const data = await getAllTransactions();
-        setTransactions(data);
-      } catch (error) {
-        console.error('Failed to fetch transactions:', error);
-        toast.error('Failed to load transactions');
-      } finally {
-        setIsLoading(false);
-      }
+      fetchOrderDetails();
+    }, [id, user, authLoading, router]);
+
+    // Handle copy to clipboard
+    const copyToClipboard = (text: string, field: string) => {
+      navigator.clipboard.writeText(text);
+      setCopied(field);
+      toast.success('Copied to clipboard');
+      setTimeout(() => setCopied(null), 2000);
     };
 
-    fetchTransactions();
-  }, []);
-
-  // Filter transactions
-  const filteredTransactions = transactions.filter(transaction => {
-    // Search by transaction ID, order number or customer name
-    const matchesSearch = 
-      transaction.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transaction.order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (transaction.order.user.name && transaction.order.user.name.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    // Filter by status
-    const matchesStatus = !filterStatus || transaction.status === filterStatus;
-
-    // Filter by type
-    const matchesType = !filterType || transaction.order.orderType === filterType;
-
-    // Filter by date
-    const transactionDate = new Date(transaction.createdAt).toISOString().split('T')[0];
-    const matchesStartDate = !dateRange.start || transactionDate >= dateRange.start;
-    const matchesEndDate = !dateRange.end || transactionDate <= dateRange.end;
-
-    return matchesSearch && matchesStatus && matchesType && matchesStartDate && matchesEndDate;
-  });
-
-  // Pagination
-  const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
-  const paginatedTransactions = filteredTransactions.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  // Format date
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('id-ID', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  // Get status badge class
-  const getStatusBadgeClass = (status: TransactionStatus) => {
-    switch (status) {
-      case 'PENDING':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-500';
-      case 'SUCCESS':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-500';
-      case 'FAILED':
-      case 'CANCELLED':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-500';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+    // Loading state
+    if (isLoading || authLoading) {
+        return (
+            <>
+                <Navbar />
+                <div className="min-h-screen flex justify-center items-center">
+                    <Loader2 size={40} className="animate-spin text-cyan-600" />
+                </div>
+                <Footer />
+            </>
+        );
     }
-  };
 
-  // Get order status badge class
-  const getOrderStatusBadgeClass = (status: string) => {
-    switch (status) {
-      case 'PENDING':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-500';
-      case 'PROCESSING':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-500';
-      case 'SHIPPED':
-        return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-500';
-      case 'DELIVERED':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-500';
-      case 'CANCELLED':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-500';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
-    }
-  };
-
-  // Handle view payment proof
-  const handleViewPaymentProof = (imageUrl: string) => {
-    setPreviewModal({
-      isOpen: true,
-      imageUrl: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${imageUrl}`
-    });
-  };
-
-  // Handle modal close
-  const handleCloseModals = () => {
-    setPreviewModal({ isOpen: false, imageUrl: null });
-  };
-
-  // Handle send receipt
-  const handleSendReceipt = async (transactionId: string) => {
-    try {
-      setIsProcessing(true);
-      await sendReceipt(transactionId);
-      toast.success('Receipt sent successfully');
-    } catch (error) {
-      console.error('Failed to send receipt:', error);
-      toast.error('Failed to send receipt');
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  return (
-    <div className="p-4 md:p-6 lg:p-8">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-7xl mx-auto"
-      >
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 md:mb-0">
-            Transaction Management
-          </h1>
-          
-          <div className="space-y-2 md:space-y-0 md:space-x-2">
-            <Input
-              type="text"
-              placeholder="Search by ID, order number or customer..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-xs"
-              prefix={<Search className="h-4 w-4 text-gray-400" />}
-            />
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-          <div className="px-4 py-4 border-b border-gray-200 dark:border-gray-700 flex flex-wrap gap-2">
-            <div className="flex items-center mr-4">
-              <label htmlFor="status-filter" className="mr-2 text-sm text-gray-600 dark:text-gray-400">
-                Status:
-              </label>
-              <select
-                id="status-filter"
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm p-1.5"
-              >
-                <option value="">All</option>
-                <option value="PENDING">Pending</option>
-                <option value="SUCCESS">Success</option>
-                <option value="FAILED">Failed</option>
-                <option value="CANCELLED">Cancelled</option>
-              </select>
-            </div>
-            
-            <div className="flex items-center mr-4">
-              <label htmlFor="type-filter" className="mr-2 text-sm text-gray-600 dark:text-gray-400">
-                Type:
-              </label>
-              <select
-                id="type-filter"
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
-                className="border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm p-1.5"
-              >
-                <option value="">All</option>
-                <option value="ONLINE">Online</option>
-                <option value="OFFLINE">Offline (POS)</option>
-              </select>
-            </div>
-            
-            <div className="flex items-center">
-              <Calendar className="h-4 w-4 text-gray-400 mr-2" />
-              <input
-                type="date"
-                value={dateRange.start}
-                onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
-                className="border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm p-1.5 mr-2"
-              />
-              <span className="text-gray-500 dark:text-gray-400 mx-1">to</span>
-              <input
-                type="date"
-                value={dateRange.end}
-                onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
-                className="border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm p-1.5"
-              />
-            </div>
-          </div>
-          
-          <div className="overflow-x-auto">
-            {isLoading ? (
-              <div className="p-8 flex justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-              </div>
-            ) : filteredTransactions.length === 0 ? (
-              <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                No transactions found
-              </div>
-            ) : (
-              <table className="w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-900/50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      ID/Date
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Order
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Customer
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Amount
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Payment
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  {paginatedTransactions.map((transaction) => (
-                    <tr 
-                      key={transaction.id} 
-                      className="hover:bg-gray-50 dark:hover:bg-gray-750 cursor-pointer"
-                      onClick={() => router.push(`/admin/transactions/${transaction.id}`)}
-                    >
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="text-xs font-mono text-gray-500 dark:text-gray-400">
-                          {transaction.id.substring(0, 8)}...
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                          {formatDate(transaction.createdAt)}
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="font-medium">{transaction.order.orderNumber}</div>
-                        <div className="text-xs mt-1">
-                          <span className={`px-1.5 py-0.5 rounded ${getOrderStatusBadgeClass(transaction.order.status)}`}>
-                            {transaction.order.status}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="font-medium">{transaction.order.user.name || 'N/A'}</div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                          {transaction.order.orderType}
-                        </div>
-                      </td>
-                      <td className="px-4 py-4 font-medium">
-                        {new Intl.NumberFormat('id-ID', {
-                          style: 'currency',
-                          currency: 'IDR',
-                          minimumFractionDigits: 0
-                        }).format(transaction.amount)}
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="flex items-center">
-                          <span>{transaction.paymentMethod || 'N/A'}</span>
-                          {transaction.paymentProof && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleViewPaymentProof(transaction.paymentProof!);
-                              }}
-                              className="ml-2 text-blue-500 hover:text-blue-700"
-                              title="View Payment Proof"
-                            >
-                              <ImageIcon size={16} />
+    // Error state
+    if (error) {
+        return (
+            <>
+                <Navbar />
+                <div className="min-h-screen py-20 px-4 flex flex-col items-center justify-center">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg max-w-md w-full text-center">
+                        <AlertTriangle className="mx-auto h-16 w-16 text-red-500 mb-6" />
+                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Something went wrong</h1>
+                        <p className="text-gray-600 dark:text-gray-300 mb-6">{error}</p>
+                        <Link href="/profile">
+                            <button className="w-full py-2 px-4 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg hover:from-cyan-700 hover:to-blue-700 transition-all duration-300">
+                                Return to Profile
                             </button>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusBadgeClass(transaction.status)}`}>
-                          {transaction.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4">
-                        <Button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            router.push(`/admin/transactions/${transaction.id}`);
-                          }}
-                          variant="outline"
-                          size="sm"
-                          className="flex items-center space-x-1"
-                        >
-                          <FileText className="h-4 w-4" />
-                          <span>Details</span>
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-          
-          {/* Pagination controls */}
-          {filteredTransactions.length > 0 && (
-            <div className="px-4 py-3 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Showing {Math.min((currentPage - 1) * itemsPerPage + 1, filteredTransactions.length)} to {Math.min(currentPage * itemsPerPage, filteredTransactions.length)} of {filteredTransactions.length} transactions
-              </div>
-              <div className="flex space-x-2">
-                <Button
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                  variant="outline"
-                  size="sm"
-                  className="p-2"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                  disabled={currentPage === totalPages}
-                  variant="outline"
-                  size="sm"
-                  className="p-2"
-                >
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-      </motion.div>
+                        </Link>
+                    </div>
+                </div>
+                <Footer />
+            </>
+        );
+    }
 
-      {/* Payment Proof Preview Modal */}
-      {previewModal.isOpen && previewModal.imageUrl && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-2xl p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium">Payment Proof</h3>
-              <button
-                onClick={handleCloseModals}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-              >
-                <X className="h-5 w-5" />
-              </button>
+    if (!orderDetails) {
+        return (
+            <>
+                <Navbar />
+                <div className="min-h-screen py-20 px-4 flex flex-col items-center justify-center">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg max-w-md w-full text-center">
+                        <AlertTriangle className="mx-auto h-16 w-16 text-red-500 mb-6" />
+                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Order not found</h1>
+                        <p className="text-gray-600 dark:text-gray-300 mb-6">We couldn't find the order you're looking for.</p>
+                        <Link href="/profile">
+                            <button className="w-full py-2 px-4 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg hover:from-cyan-700 hover:to-blue-700 transition-all duration-300">
+                                Back to Profile
+                            </button>
+                        </Link>
+                    </div>
+                </div>
+                <Footer />
+            </>
+        );
+    }
+
+    return (
+        <>
+            <Navbar />
+            <Toaster position="top-right" />
+            <div className="relative py-20 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-sky-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900"></div>
+
+                <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                    <div className="mb-6">
+                        <Link href="/profile">
+                            <button className="inline-flex items-center text-sm text-cyan-600 hover:text-cyan-800 dark:text-cyan-400 dark:hover:text-cyan-300">
+                                <ArrowLeft size={16} className="mr-1" />
+                                Kembali ke Profil
+                            </button>
+                        </Link>
+                    </div>
+
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+                        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                            <div className="flex flex-wrap justify-between items-center">
+                                <div>
+                                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                        Pesanan #{orderDetails.orderNumber}
+                                    </h1>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                        Tanggal Pesanan: {new Date(orderDetails.orderDate).toLocaleDateString('id-ID', {
+                                            day: 'numeric',
+                                            month: 'long',
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </p>
+                                </div>
+                                <StatusBadge status={orderDetails.status} />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
+                            <div className="lg:col-span-2 space-y-6">
+                                {/* Order Items */}
+                                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                                    <div className="p-4 bg-gray-50 dark:bg-gray-900/30 border-b border-gray-200 dark:border-gray-700">
+                                        <h2 className="font-medium text-gray-900 dark:text-white">Item yang Dipesan</h2>
+                                    </div>
+
+                                    <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+                                        {orderDetails.items.map((item: any) => (
+                                            <li key={item.id} className="p-4 flex items-start gap-4">
+                                                <div className="relative h-16 w-16 rounded-md overflow-hidden flex-shrink-0">
+                                                    <Image
+                                                        src={item.imageUrl || '/images/placeholder.jpg'}
+                                                        alt={item.productName}
+                                                        fill
+                                                        className="object-cover"
+                                                        unoptimized
+                                                    />
+                                                </div>
+                                                
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="font-medium text-gray-900 dark:text-white truncate">
+                                                        {item.productName}
+                                                    </h3>
+                                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                        {(item.weight / 1000).toFixed(1)} kg × {formatToIDR(item.pricePerUnit)}/kg
+                                                    </p>
+                                                </div>
+                                                
+                                                <div className="text-right">
+                                                    <p className="font-medium text-gray-900 dark:text-white">
+                                                        {formatToIDR(item.totalPrice)}
+                                                    </p>
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                {/* Delivery Address */}
+                                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                                    <div className="p-4 bg-gray-50 dark:bg-gray-900/30 border-b border-gray-200 dark:border-gray-700">
+                                        <h2 className="font-medium text-gray-900 dark:text-white">Alamat Pengiriman</h2>
+                                    </div>
+
+                                    <div className="p-4">
+                                        <p className="text-gray-900 dark:text-white">{orderDetails.deliveryAddress}</p>
+                                    </div>
+                                </div>
+
+                                {/* Payment Info */}
+                                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                                    <div className="p-4 bg-gray-50 dark:bg-gray-900/30 border-b border-gray-200 dark:border-gray-700">
+                                        <h2 className="font-medium text-gray-900 dark:text-white">Informasi Pembayaran</h2>
+                                    </div>
+                                    
+                                    <div className="p-4">
+                                        {orderDetails.payment ? (
+                                        <div>
+                                            <div className="flex justify-between mb-2">
+                                                <p className="text-gray-600 dark:text-gray-400">Metode Pembayaran</p>
+                                                <p className="font-medium text-gray-900 dark:text-white">{orderDetails.payment.method}</p>
+                                            </div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <p className="text-gray-600 dark:text-gray-400">Status Pembayaran</p>
+                                                {orderDetails.payment.proofImage ? (
+                                                <p className="font-medium text-yellow-600 dark:text-yellow-400">
+                                                    Menunggu Verifikasi Admin
+                                                </p>
+                                                ) : (
+                                                <p className={`font-medium ${
+                                                    orderDetails.payment.status === 'PAID' || orderDetails.payment.status === 'SUCCESS'
+                                                        ? 'text-green-600 dark:text-green-400' 
+                                                        : 'text-yellow-600 dark:text-yellow-400'
+                                                }`}>
+                                                    {orderDetails.payment.status === 'PAID' || orderDetails.payment.status === 'SUCCESS' 
+                                                        ? 'Sudah Dibayar' 
+                                                        : 'Menunggu Pembayaran'}
+                                                </p>
+                                                )}
+                                            </div>
+                                            
+                                            {orderDetails.payment.paidAt && (
+                                                <div className="flex justify-between">
+                                                <p className="text-gray-600 dark:text-gray-400">Tanggal Pembayaran</p>
+                                                <p className="font-medium text-gray-900 dark:text-white">
+                                                    {new Date(orderDetails.payment.paidAt).toLocaleDateString('id-ID', {
+                                                    day: 'numeric',
+                                                    month: 'long',
+                                                    year: 'numeric',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                    })}
+                                                </p>
+                                                </div>
+                                            )}
+                                            
+                                            {/* Payment proof image if manual payment */}
+                                            {orderDetails.payment?.proofImage && (
+                                                <div className="mt-4">
+                                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Bukti Pembayaran:</p>
+                                                    <div className="relative h-48 w-full rounded-md overflow-hidden border border-gray-200 dark:border-gray-700">
+                                                        <Image
+                                                            src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}${orderDetails.payment.proofImage}`}
+                                                            alt="Bukti Pembayaran"
+                                                            fill
+                                                            className="object-contain"
+                                                            unoptimized
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                        ) : (
+                                            <div className="flex items-center justify-center py-4">
+                                                <Clock className="h-5 w-5 text-yellow-500 mr-2" />
+                                                <p className="text-yellow-600 dark:text-yellow-400">Menunggu Informasi Pembayaran</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Bank Transfer Information (If pending) */}
+                                {orderDetails.status === 'PENDING' && orderDetails.payment?.method === 'manual' && (
+                                    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                                        <div className="p-4 bg-gray-50 dark:bg-gray-900/30 border-b border-gray-200 dark:border-gray-700">
+                                            <h2 className="font-medium text-gray-900 dark:text-white">Informasi Rekening</h2>
+                                        </div>
+                                        
+                                        <div className="p-4">
+                                            <div className="flex justify-between items-center mb-3">
+                                                <div className="flex items-center">
+                                                    <Image 
+                                                        src="/Bank-Mandiri.png" 
+                                                        alt="Bank Mandiri" 
+                                                        width={80} 
+                                                        height={30}
+                                                        className="h-8 w-auto"
+                                                    />
+                                                    <span className="ml-2 font-medium text-gray-900 dark:text-white">Bank Mandiri</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-3">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-gray-600 dark:text-gray-400">No. Rekening</span>
+                                                    <div className="flex items-center">
+                                                        <span className="font-medium text-gray-900 dark:text-white mr-2">1370009876543</span>
+                                                        <button 
+                                                            onClick={() => copyToClipboard('1370009876543', 'account')}
+                                                            className="text-cyan-600 hover:text-cyan-700 dark:text-cyan-400"
+                                                        >
+                                                            {copied === 'account' ? <Check size={16} /> : <Copy size={16} />}
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-gray-600 dark:text-gray-400">Atas Nama</span>
+                                                    <span className="font-medium text-gray-900 dark:text-white">SARYO</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Shipping Info */}
+                                {orderDetails.shipping && (
+                                    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                                        <div className="p-4 bg-gray-50 dark:bg-gray-900/30 border-b border-gray-200 dark:border-gray-700 flex items-center">
+                                            <Truck className="h-5 w-5 text-cyan-600 mr-2" />
+                                            <h2 className="font-medium text-gray-900 dark:text-white">Informasi Pengiriman</h2>
+                                        </div>
+
+                                        <div className="p-4">
+                                            <div className="grid gap-4">
+                                                <div className="flex justify-between">
+                                                    <p className="text-gray-600 dark:text-gray-400">Status Pengiriman</p>
+                                                    <p className="font-medium text-gray-900 dark:text-white">
+                                                        {orderDetails.shipping.deliveryStatus}
+                                                    </p>
+                                                </div>
+                                                
+                                                {orderDetails.shipping.staffName && (
+                                                    <div className="flex justify-between">
+                                                        <p className="text-gray-600 dark:text-gray-400">Kurir</p>
+                                                        <p className="font-medium text-gray-900 dark:text-white">
+                                                            {orderDetails.shipping.staffName}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                                
+                                                {orderDetails.shipping.deliveryDate && (
+                                                    <div className="flex justify-between">
+                                                        <p className="text-gray-600 dark:text-gray-400">Estimasi Pengiriman</p>
+                                                        <p className="font-medium text-gray-900 dark:text-white">
+                                                            {new Date(orderDetails.shipping.deliveryDate).toLocaleDateString('id-ID', {
+                                                                day: 'numeric',
+                                                                month: 'long',
+                                                                year: 'numeric'
+                                                            })}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                                
+                                                {orderDetails.shipping.notes && (
+                                                    <div>
+                                                        <p className="text-gray-600 dark:text-gray-400 mb-1">Catatan:</p>
+                                                        <p className="font-medium text-gray-900 dark:text-white">
+                                                            {orderDetails.shipping.notes}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Order Summary */}
+                            <div className="lg:col-span-1">
+                                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                                    <div className="p-4 bg-gray-50 dark:bg-gray-900/30 border-b border-gray-200 dark:border-gray-700">
+                                        <h2 className="font-medium text-gray-900 dark:text-white">Ringkasan Pesanan</h2>
+                                    </div>
+
+                                    <div className="p-4">
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
+                                                <span className="text-gray-900 dark:text-white">{formatToIDR(orderDetails.subtotal)}</span>
+                                            </div>
+
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-600 dark:text-gray-400">Ongkos Kirim</span>
+                                                <span className="text-gray-900 dark:text-white">{formatToIDR(orderDetails.shippingCost)}</span>
+                                            </div>
+
+                                            {orderDetails.serviceCharge > 0 && (
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-600 dark:text-gray-400">Biaya Layanan (3.5%)</span>
+                                                    <span className="text-gray-900 dark:text-white">{formatToIDR(orderDetails.serviceCharge)}</span>
+                                                </div>
+                                            )}
+
+                                            <div className="pt-2 border-t border-gray-200 dark:border-gray-700 mt-2">
+                                                <div className="flex justify-between">
+                                                    <span className="font-bold text-gray-900 dark:text-white">Total</span>
+                                                    <span className="font-bold text-gray-900 dark:text-white">{formatToIDR(orderDetails.totalAmount)}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Order Status Timeline */}
+                                        {orderDetails.statusHistory && orderDetails.statusHistory.length > 0 && (
+                                            <div className="mt-6">
+                                                <h3 className="font-medium text-gray-900 dark:text-white mb-3">Status Pesanan</h3>
+                                                <div className="space-y-4">
+                                                    {orderDetails.statusHistory.map((history: any, index: number) => (
+                                                        <div key={index} className="flex">
+                                                            <div className="mr-3 flex flex-col items-center">
+                                                                <div className={`rounded-full h-3 w-3 ${history.current ? 'bg-cyan-500' : 'bg-gray-300 dark:bg-gray-600'}`}></div>
+                                                                {index < (orderDetails.statusHistory.length - 1) && (
+                                                                    <div className="h-full w-0.5 bg-gray-300 dark:bg-gray-600"></div>
+                                                                )}
+                                                            </div>
+                                                            <div className="pb-4">
+                                                                <p className={`text-sm font-medium ${history.current ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
+                                                                    {history.status === 'PENDING' ? 'Menunggu Pembayaran' :
+                                                                        history.status === 'PROCESSING' ? 'Diproses' :
+                                                                            history.status === 'SHIPPED' ? 'Dikirim' :
+                                                                                history.status === 'DELIVERED' ? 'Selesai' :
+                                                                                    history.status === 'CANCELLED' ? 'Dibatalkan' : history.status}
+                                                                </p>
+                                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                    {new Date(history.timestamp).toLocaleDateString('id-ID', {
+                                                                        day: 'numeric',
+                                                                        month: 'long',
+                                                                        year: 'numeric',
+                                                                        hour: '2-digit',
+                                                                        minute: '2-digit'
+                                                                    })}
+                                                                </p>
+                                                                {history.note && (
+                                                                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                                                                        {history.note}
+                                                                    </p>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Order Actions */}
+                                        {orderDetails.status === 'PENDING' && (!orderDetails.payment || 
+                                            (orderDetails.payment.status !== 'PAID' && 
+                                             orderDetails.payment.status !== 'SUCCESS')) && (
+                                            <div className="mt-6">
+                                                <Link href={`/payment/${orderDetails.id}`}>
+                                                    <button className="w-full py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-medium rounded-lg hover:from-cyan-700 hover:to-blue-700 transition-all duration-300">
+                                                        Lanjutkan Pembayaran
+                                                    </button>
+                                                </Link>
+                                            </div>
+                                        )}
+
+                                        {/* Support Information */}
+                                        <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
+                                            <p>Butuh bantuan? Hubungi kami di:</p>
+                                            <p className="font-medium text-cyan-600 dark:text-cyan-400">
+                                                +62 812-2784-8422 / +62 812-2679-5993
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div className="relative w-full h-[400px]">
-              <Image
-                src={previewModal.imageUrl}
-                alt="Payment Proof"
-                fill
-                className="object-contain rounded-md"
-              />
-            </div>
-            <div className="mt-4 flex justify-end">
-              <a 
-                href={previewModal.imageUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                download="payment-proof.jpg"
-                className="text-blue-500 hover:underline flex items-center"
-              >
-                <Download className="h-4 w-4 mr-1" />
-                <span>Download</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+            <Footer />
+        </>
+    );
 }
