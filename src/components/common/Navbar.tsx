@@ -101,7 +101,6 @@ const Navbar = () => {
               className="flex items-center gap-1 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors relative"
             >
               <ShoppingCart className="h-5 w-5 text-gray-700 dark:text-gray-300" />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">0</span>
             </Link>
 
             {user ? (

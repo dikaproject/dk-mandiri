@@ -65,10 +65,15 @@ export default function UpdateStockModal({ isOpen, product, onClose, onSuccess }
     setIsSubmitting(true);
     
     try {
-      // Calculate final stock value based on mode
+      // Calculate final stock value based on mode - PERBAIKAN DISINI
       const finalStock = addToExisting 
-        ? product.weightInStock + newStockValue 
+        ? Number(product.weightInStock) + Number(newStockValue) // Pastikan keduanya adalah Number
         : newStockValue;
+      
+      // Tambahkan log untuk debugging
+      console.log('Current stock:', product.weightInStock, 'typeof:', typeof product.weightInStock);
+      console.log('Adding:', newStockValue, 'typeof:', typeof newStockValue);
+      console.log('Final stock:', finalStock, 'typeof:', typeof finalStock);
       
       await updateProductStock(product.id, finalStock);
       onSuccess(product.id, finalStock);

@@ -495,16 +495,16 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
                                         {/* Order Actions */}
                                         {orderDetails.status === 'PENDING' && (!orderDetails.payment || 
-                                            (orderDetails.payment.status !== 'PAID' && 
-                                             orderDetails.payment.status !== 'SUCCESS')) && (
-                                            <div className="mt-6">
-                                                <Link href={`/payment/${orderDetails.id}`}>
-                                                    <button className="w-full py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-medium rounded-lg hover:from-cyan-700 hover:to-blue-700 transition-all duration-300">
-                                                        Lanjutkan Pembayaran
-                                                    </button>
-                                                </Link>
-                                            </div>
-                                        )}
+    (orderDetails.payment.status !== 'PAID' && 
+     orderDetails.payment.status !== 'SUCCESS')) && (
+    <div className="mt-6">
+        <Link href={`/payment/${orderDetails.id}?token=${orderDetails.payment?.snapToken || ''}&type=${orderDetails.payment?.method || 'manual'}`}>
+            <button className="w-full py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-medium rounded-lg hover:from-cyan-700 hover:to-blue-700 transition-all duration-300">
+                Lanjutkan Pembayaran
+            </button>
+        </Link>
+    </div>
+)}
 
                                         {/* Support Information */}
                                         <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">

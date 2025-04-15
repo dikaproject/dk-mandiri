@@ -233,7 +233,7 @@ export default function CartPage() {
               <p className="text-gray-600 dark:text-gray-300 mb-6">
                 Looks like you haven't added any products to your cart yet.
               </p>
-              <Link href="/products">
+              <Link href="/product">
                 <button className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg hover:from-cyan-700 hover:to-blue-700 transition-all duration-300">
                   Start Shopping
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -399,7 +399,7 @@ export default function CartPage() {
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </button>
                   
-                  <Link href="/products">
+                  <Link href="/product">
                     <button className="w-full py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 mt-2">
                       Continue Shopping
                     </button>

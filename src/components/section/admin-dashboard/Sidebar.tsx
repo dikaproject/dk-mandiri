@@ -18,6 +18,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useTheme } from '@/components/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
+import { Bot } from 'lucide-react';
 
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: HomeIcon },
@@ -27,6 +28,7 @@ const navigation = [
   { name: 'User Management', href: '/admin/user', icon: UsersIcon },
   { name: 'Transaction Management', href: '/admin/transactions', icon: ShoppingCartIcon },
   { name: 'POS Management', href: '/admin/pos', icon: ShoppingCartIcon },
+  { name: 'AI Service', href: '/admin/aiservice', icon: Bot },
   { name: 'Back To Home', href: '/', icon: HomeIcon },
 ];
 

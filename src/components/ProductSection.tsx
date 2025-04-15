@@ -168,7 +168,10 @@ const ProductSection = () => {
                     </div>
 
                     {/* CTA Button */}
-                    <Link href={`/product/${product.slug}`} aria-label={`Pesan ${product.name} sekarang`}>
+                    <Link 
+                      href={product.slug ? `/product/${product.slug}` : `/product`} 
+                      aria-label={`Pesan ${product.name} sekarang`}
+                    >
                       <button className="w-full py-2 px-4 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg hover:from-cyan-700 hover:to-blue-700 transition-all duration-300">
                         Order Now
                       </button>

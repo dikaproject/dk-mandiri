@@ -1,9 +1,22 @@
 'use client'
-import React, { useState, useRef, useEffect } from 'react';
+
+import { useState, useRef, useEffect } from 'react';
 import Navbar from '@/components/common/Navbar';
 import Footer from '@/components/common/Footer';
-import { sendMessage, ChatMessage } from '@/services/assistant';
+import { sendMessage } from '@/services/assistant';
+import { Sparkles, MessageCircle, User, Bot, Trash2, SendHorizontal, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+}
+
+interface SuggestedQuery {
+  text: string;
+  icon: React.ReactNode;
+}
 
 const AssistantPage: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -19,11 +32,56 @@ const AssistantPage: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to bottom when messages change
-  useEffect(() => {
+  // Suggested queries for user to try
+  const suggestedQueries: SuggestedQuery[] = [
+    { 
+      text: 'Apa saja jenis ikan populer?',
+      icon: <Sparkles className="w-4 h-4 mr-2" />
+    },
+    { 
+      text: 'Apakah ikan bawal segar?',
+      icon: <MessageCircle className="w-4 h-4 mr-2" /> 
+    },
+    { 
+      text: 'Berapa harga udang windu?',
+      icon: <MessageCircle className="w-4 h-4 mr-2" />
+    },
+    { 
+      text: 'Tips menyimpan ikan agar tetap segar',
+      icon: <Sparkles className="w-4 h-4 mr-2" />
+    },
+  ];
+
+  // Enhanced scroll function with better reliability
+  const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      messagesEndRef.current.scrollIntoView({ behavior });
     }
+  };
+
+  // Update the chat container height based on viewport
+  useEffect(() => {
+    const updateHeight = () => {
+      if (chatContainerRef.current) {
+        const viewportHeight = window.innerHeight;
+        const offset = 340; // Adjust based on your header/footer/input heights
+        const newHeight = Math.max(400, viewportHeight - offset);
+        chatContainerRef.current.style.height = `${newHeight}px`;
+      }
+    };
+    
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
+  }, []);
+
+  // Scroll to bottom when messages change with a small delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      scrollToBottom();
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, [messages]);
 
   // Focus input when page loads
@@ -38,17 +96,22 @@ const AssistantPage: React.FC = () => {
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!input.trim()) return;
-    
-
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!input.trim()) return;
+    if (!input.trim() || isLoading) return;
     
     // Add user message
     const userMessage: ChatMessage = {
+      role: 'user',
+      content: input,
+      timestamp: new Date()
+    };
+    
+    // Update messages and scroll
+    setMessages(prev => [...prev, userMessage]);
     setInput('');
+    
+    // Immediate scroll after adding user message
+    setTimeout(() => scrollToBottom(), 50);
+    
     setIsLoading(true);
     
     try {
@@ -88,6 +151,7 @@ const AssistantPage: React.FC = () => {
     } finally {
       setIsLoading(false);
       inputRef.current?.focus();
+      setTimeout(() => scrollToBottom(), 100);
     }
   };
 
@@ -117,272 +181,168 @@ const AssistantPage: React.FC = () => {
       <Navbar />
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-16 pb-24 transition-all duration-300">
         <div className="max-w-5xl mx-auto px-4 py-8">
-          {/* Beta warning banner */}
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-6 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded-xl p-4 text-sm text-yellow-800 dark:text-yellow-300 shadow-sm"
-          >
-            <div className="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-              </svg>
-              <span><strong>Peringatan:</strong> AI DK Mandiri masih tahap versi 0.1 beta dimana data bisa tidak akurat. Jika ada pertanyaan lebih lanjut, silakan hubungi langsung kontak DK Mandiri Resmi di footer.</span>
+          <div className="flex flex-col items-center justify-center mb-8">
+            <div className="bg-blue-600 p-3 rounded-full mb-4">
+              <Bot className="h-8 w-8 text-white" />
             </div>
-          </motion.div>
+            <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white">
+              DK Mandiri AI Assistant
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 text-center mt-2 max-w-2xl">
+              Tanya apa saja tentang produk, harga terkini, rekomendasi pembelian, atau informasi seputar ikan dan udang!
+            </p>
+          </div>
           
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-white dark:bg-gray-800 shadow-xl rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 transition-all duration-300 backdrop-blur-sm bg-opacity-80 dark:bg-opacity-80"
-          >
-            {/* Chat header */}
-            <div className="bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-700 dark:to-cyan-600 text-white px-6 py-5 relative overflow-hidden">
-              <div className="absolute inset-0 opacity-10">
-                <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
-                  <path d="M0,0 L100,0 L100,100 L0,100 Z" fill="url(#pattern)" />
-                  <defs>
-                    <pattern id="pattern" patternUnits="userSpaceOnUse" width="40" height="40" patternTransform="rotate(45)">
-                      <rect width="100%" height="100%" fill="none" />
-                      <circle cx="20" cy="20" r="2" fill="currentColor" />
-                    </pattern>
-                  </defs>
-                </svg>
-              </div>
-              <div className="flex items-center justify-between relative z-10">
-                <div className="flex items-center">
-                  <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center mr-4 shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <h2 className="font-bold text-xl">DK Mandiri Assistant <span className="text-xs bg-yellow-500 text-yellow-900 px-2 py-0.5 rounded-full ml-2 font-medium">BETA 0.1</span></h2>
-                    <p className="text-sm text-blue-50">Siap menjawab pertanyaan Anda tentang produk ikan kami</p>
-                  </div>
-                </div>
-                <button 
-                  onClick={handleClearChat}
-                  className="text-white/70 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg px-3 py-1.5 text-sm transition duration-200 flex items-center"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  </svg>
-                  Bersihkan Obrolan
-                </button>
-              </div>
-            </div>
-            
-            {/* Chat messages */}
-            <div ref={chatContainerRef} className="p-6 h-[500px] overflow-y-auto bg-gray-50 dark:bg-gray-900 transition-all duration-300 bg-opacity-50 dark:bg-opacity-50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-all duration-300">
+            {/* Chat container with messages */}
+            <div 
+              ref={chatContainerRef} 
+              className="p-6 overflow-y-auto bg-gray-50 dark:bg-gray-900 transition-all duration-300 bg-opacity-50 dark:bg-opacity-50 backdrop-blur-sm"
+              style={{ 
+                height: '500px',
+                scrollBehavior: 'smooth', 
+                overscrollBehavior: 'contain'
+              }}
+            >
               <AnimatePresence>
-                {messages.map((msg, index) => (
-                  <motion.div 
+                {messages.map((message, index) => (
+                  <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
-                    className={`mb-6 flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                    className={`flex items-start mb-4 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
-                    {msg.role === 'assistant' && (
-                      <div className="h-9 w-9 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-700 dark:to-cyan-600 flex items-center justify-center text-white mr-3 shadow-md">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                        </svg>
-                      </div>
-                    )}
-                    <div 
-                      className={`max-w-[85%] rounded-2xl px-5 py-3.5 shadow-sm ${
-                        msg.role === 'user' 
-                          ? 'bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-700 dark:to-cyan-600 text-white rounded-br-none' 
-                          : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-bl-none border border-gray-100 dark:border-gray-700'
-                      }`}
+                    <div
+                      className={`flex items-start max-w-[80%] ${
+                        message.role === 'user'
+                          ? 'bg-blue-600 text-white rounded-2xl rounded-tr-none'
+                          : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-2xl rounded-tl-none'
+                      } px-4 py-3 shadow-sm`}
                     >
-                      <p className="leading-relaxed whitespace-pre-line">{msg.content}</p>
-                      <span className={`text-xs mt-2 block ${
-                        msg.role === 'user' ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
-                      }`}>
-                        {formatTime(msg.timestamp)}
-                      </span>
-                    </div>
-                    {msg.role === 'user' && (
-                      <div className="h-9 w-9 rounded-full bg-gray-400 dark:bg-gray-600 flex items-center justify-center text-white ml-3 shadow-md">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                          <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
+                      <div className="mr-2 mt-1">
+                        {message.role === 'user' ? (
+                          <User className="h-5 w-5" />
+                        ) : (
+                          <Bot className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                        )}
                       </div>
-                    )}
+                      <div className="flex-1">
+                        <div className="flex items-center mb-1">
+                          <span className="font-medium text-sm">
+                            {message.role === 'user' ? 'Anda' : 'DK Mandiri AI'}
+                          </span>
+                          <span className="ml-2 text-xs opacity-70">
+                            {formatTime(message.timestamp)}
+                          </span>
+                        </div>
+                        <div 
+                          className="whitespace-pre-wrap prose-sm dark:prose-invert"
+                          dangerouslySetInnerHTML={{ 
+                            __html: message.content
+                              .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                              .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                              .replace(/\n/g, '<br>')
+                          }}
+                        />
+                      </div>
+                    </div>
                   </motion.div>
                 ))}
               </AnimatePresence>
               
+              {/* Loading indicator */}
               {isLoading && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="flex justify-start mb-6"
+                  className="flex items-start mb-4 justify-start"
                 >
-                  <div className="h-9 w-9 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-700 dark:to-cyan-600 flex items-center justify-center text-white mr-3 shadow-md">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                    </svg>
-                  </div>
-                  <div className="bg-white dark:bg-gray-800 rounded-2xl px-6 py-4 rounded-bl-none shadow-sm border border-gray-100 dark:border-gray-700">
-                    <div className="flex space-x-2">
-                      <div className="bg-blue-400 dark:bg-blue-500 rounded-full h-2.5 w-2.5 animate-pulse"></div>
-                      <div className="bg-blue-400 dark:bg-blue-500 rounded-full h-2.5 w-2.5 animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                      <div className="bg-blue-400 dark:bg-blue-500 rounded-full h-2.5 w-2.5 animate-pulse" style={{animationDelay: '0.4s'}}></div>
-                    </div>
+                  <div className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-2xl rounded-tl-none px-4 py-3 shadow-sm flex items-center">
+                    <Bot className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2" />
+                    <Loader2 className="h-4 w-4 animate-spin text-blue-600 dark:text-blue-400" />
+                    <span className="ml-2 text-sm">Mengetik...</span>
                   </div>
                 </motion.div>
               )}
+              
+              {/* Div for scrolling to end */}
               <div ref={messagesEndRef} />
             </div>
             
-            {/* Chat input */}
-            <form onSubmit={handleSendMessage} className="border-t border-gray-200 dark:border-gray-700 p-5 bg-white dark:bg-gray-800 transition-all duration-300">
-              <div className="flex items-center">
+            {/* Input area */}
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+              <form onSubmit={handleSendMessage} className="relative">
                 <input
+                  ref={inputRef}
                   type="text"
                   value={input}
                   onChange={handleInputChange}
-                  placeholder="Ketik pesan Anda di sini..."
-                  className="flex-1 border border-gray-300 dark:border-gray-600 rounded-l-xl px-4 py-3.5 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 dark:focus:ring-cyan-600 transition-all duration-200"
+                  placeholder="Tulis pesan Anda..."
                   disabled={isLoading}
-                  ref={inputRef}
+                  className="w-full pl-4 pr-12 py-3 rounded-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-gray-100 transition-all duration-300"
+                  autoComplete="off"
                 />
                 <button
                   type="submit"
-                  className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 dark:from-blue-700 dark:to-cyan-600 dark:hover:from-blue-800 dark:hover:to-cyan-700 text-white rounded-r-xl px-6 py-3.5 disabled:opacity-50 transition-all duration-200 shadow-lg shadow-blue-500/20 dark:shadow-blue-700/30"
                   disabled={isLoading || !input.trim()}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                  </svg>
+                  {isLoading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <SendHorizontal className="h-5 w-5" />
+                  )}
                 </button>
-              </div>
+              </form>
               
               {/* Suggested queries */}
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap justify-center gap-2">
+                {suggestedQueries.map((query, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSuggestedQuery(query.text)}
+                    disabled={isLoading}
+                    className="flex items-center bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 px-3 py-1.5 rounded-full text-sm transition-all duration-300"
+                  >
+                    {query.icon}
+                    {query.text}
+                  </button>
+                ))}
+                
+                {/* Clear button */}
                 <button
-                  type="button"
-                  onClick={() => setSuggestedQuery('Berapa harga ikan kerapu terkini?')}
-                  className="bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-800/50 text-blue-700 dark:text-blue-300 text-sm px-4 py-2 rounded-full transition-all duration-200 shadow-sm border border-blue-100 dark:border-blue-700/50"
+                  onClick={handleClearChat}
+                  disabled={isLoading || messages.length <= 1}
+                  className="flex items-center bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-800 dark:text-red-300 px-3 py-1.5 rounded-full text-sm transition-all duration-300"
                 >
-                  <span className="flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="11" cy="11" r="8"></circle>
-                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                    Harga ikan kerapu
-                  </span>
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Hapus Chat
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setSuggestedQuery('Ikan apa yang paling laris bulan ini?')}
-                  className="bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-800/50 text-blue-700 dark:text-blue-300 text-sm px-4 py-2 rounded-full transition-all duration-200 shadow-sm border border-blue-100 dark:border-blue-700/50"
-                >
-                  <span className="flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                    </svg>
-                    Ikan terlaris
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSuggestedQuery('Apakah DK Mandiri menyediakan pengiriman untuk supplier?')}
-                  className="bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-800/50 text-blue-700 dark:text-blue-300 text-sm px-4 py-2 rounded-full transition-all duration-200 shadow-sm border border-blue-100 dark:border-blue-700/50"
-                >
-                  <span className="flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="1" y="3" width="15" height="13"></rect>
-                      <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-                      <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                      <circle cx="18.5" cy="18.5" r="2.5"></circle>
-                    </svg>
-                    Info pengiriman
-                  </span>
-                </button>
-              </div>
-            </form>
-          </motion.div>
-          
-          {/* Features section */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="mt-16"
-          >
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-8 text-center transition-all duration-300">
-              <span className="relative inline-block">
-                <span className="relative z-10">Fitur AI Assistant</span>
-                <span className="absolute bottom-1 left-0 w-full h-3 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 dark:from-blue-500/30 dark:to-cyan-500/30 -z-10 rounded"></span>
-              </span>
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Feature 1 */}
-              <motion.div 
-                whileHover={{ y: -5 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                className="bg-white dark:bg-gray-800 p-7 rounded-xl shadow-xl hover:shadow-2xl border border-gray-100 dark:border-gray-700 transition-all duration-300"
-              >
-                <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/40 dark:to-cyan-900/40 rounded-2xl flex items-center justify-center mb-5 shadow-inner transition-all duration-300">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600 dark:text-blue-400">
-                    <line x1="12" y1="2" x2="12" y2="6"></line>
-                    <line x1="12" y1="18" x2="12" y2="22"></line>
-                    <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
-                    <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
-                    <line x1="2" y1="12" x2="6" y2="12"></line>
-                    <line x1="18" y1="12" x2="22" y2="12"></line>
-                    <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
-                    <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold mb-3 text-gray-800 dark:text-gray-100 transition-all duration-300">Info Harga Real-time</h3>
-                <p className="text-gray-600 dark:text-gray-300 transition-all duration-300 leading-relaxed">Dapatkan informasi harga ikan terkini langsung dari database kami yang selalu diperbarui.</p>
-              </div>
-              
-              {/* Feature 2 */}
-              <motion.div 
-                whileHover={{ y: -5 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                className="bg-white dark:bg-gray-800 p-7 rounded-xl shadow-xl hover:shadow-2xl border border-gray-100 dark:border-gray-700 transition-all duration-300"
-              >
-                <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/40 dark:to-cyan-900/40 rounded-2xl flex items-center justify-center mb-5 shadow-inner transition-all duration-300">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600 dark:text-blue-400">
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold mb-3 text-gray-800 dark:text-gray-100 transition-all duration-300">Analisis Tren Pasar</h3>
-                <p className="text-gray-600 dark:text-gray-300 transition-all duration-300 leading-relaxed">Ketahui jenis ikan yang sedang diminati pasar dan trending berdasarkan data penjualan terkini.</p>
-              </div>
-              
-              {/* Feature 3 */}
-              <motion.div 
-                whileHover={{ y: -5 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                className="bg-white dark:bg-gray-800 p-7 rounded-xl shadow-xl hover:shadow-2xl border border-gray-100 dark:border-gray-700 transition-all duration-300"
-              >
-                <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/40 dark:to-cyan-900/40 rounded-2xl flex items-center justify-center mb-5 shadow-inner transition-all duration-300">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600 dark:text-blue-400">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold mb-3 text-gray-800 dark:text-gray-100 transition-all duration-300">Bantuan 24/7</h3>
-                <p className="text-gray-600 dark:text-gray-300 transition-all duration-300 leading-relaxed">Dapatkan jawaban untuk pertanyaan Anda tentang produk ikan, pemesanan, dan layanan kapan saja.</p>
               </div>
             </div>
-          </motion.div>
+          </div>
+          
+          {/* Info section */}
+          <div className="mt-8 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md transition-all duration-300">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              Tentang DK Mandiri AI Assistant
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              DK Mandiri AI Assistant didesain untuk membantu Anda mendapatkan informasi tentang produk-produk ikan dan udang dari DK Mandiri. Asistensi ini masih dalam tahap pengembangan dan terus ditingkatkan untuk memberikan pengalaman yang lebih baik.
+            </p>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mt-6 mb-2">
+              Apa yang dapat ditanyakan:
+            </h3>
+            <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
+              <li>Informasi tentang berbagai jenis ikan dan udang</li>
+              <li>Harga terkini untuk produk-produk tertentu</li>
+              <li>Tips penyimpanan dan pengolahan makanan laut</li>
+              <li>Rekomendasi produk berdasarkan kebutuhan</li>
+              <li>Informasi tentang nutrisi dan manfaat makanan laut</li>
+            </ul>
+          </div>
         </div>
       </div>
       <Footer />

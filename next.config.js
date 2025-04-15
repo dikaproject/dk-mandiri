@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['localhost', 'dkmandiri.id']
+    domains: ['localhost', 'dkmandiri.id', 'source.unsplash.com']
   },
   
   eslint: {

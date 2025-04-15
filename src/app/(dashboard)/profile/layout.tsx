@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import ProtectedRoute from "@/components/layouts/protected";
+import  Navbar from "@/components/common/Navbar";
+import Footer from "@/components/common/Footer";
 
 export const metadata: Metadata = {
     title: "Profile | DK Mandiri",
@@ -13,6 +15,7 @@ export default function ProfileLayout({
   }) {
     return (
       <ProtectedRoute>
+        <Navbar />
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
           <div className="flex h-screen">
             <div className="flex-1 flex flex-col overflow-hidden">
@@ -22,6 +25,7 @@ export default function ProfileLayout({
             </div>
           </div>
         </div>
+        <Footer />
       </ProtectedRoute>
     );
   }

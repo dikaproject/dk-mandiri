@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Community from '@/components/section/Community';
 import Navbar from '@/components/common/Navbar';
 import Footer from '@/components/common/Footer';
+import ChatAssistant from '@/components/ChatAssistant';
 
 export const metadata: Metadata = {
   title: 'Community Reviews | DK Mandiri Seafood',
@@ -14,6 +15,7 @@ export default function CommunityPage() {
      <Navbar />
       <Community />
       <Footer />
+      <ChatAssistant />
     </>
   );
 }

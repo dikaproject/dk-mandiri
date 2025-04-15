@@ -234,6 +234,9 @@ export default function ProductPage() {
 <h3 className="mt-2 text-lg font-medium text-gray-900 dark:text-white line-clamp-1">
   {product.name}
 </h3>
+<p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 mb-1">
+  ID: <span className="font-mono select-all">{product.id}</span>
+</p>
 <p className="mt-1 text-gray-600 dark:text-gray-300 text-lg font-semibold">
   Rp {product.price.toLocaleString()}/kg
 </p>

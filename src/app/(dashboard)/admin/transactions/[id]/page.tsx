@@ -32,7 +32,9 @@ import { Card } from '@/components/ui/card';
 import ShippingModal from '@/components/admin/ShippingModal';
 import CompleteOrderModal from '@/components/admin/CompleteOrderModal';
 import { updateOrderStatusFromTransaction, sendReceipt } from '@/services/transaction';
-import { Transaction, Order, OrderItem } from '@/types/transaction';
+import { Transaction } from '@/types/transaction';
+import ApprovePaymentModal from '@/components/admin/ApprovePaymentModal';
+import { verifyPayment } from '@/services/transaction';
 import { getTransactionById } from '@/services/transaction';
 
 export default function TransactionDetailPage() {
@@ -57,28 +59,32 @@ export default function TransactionDetailPage() {
     imageUrl: null,
     isLoading: false
   });
+  const [approveModal, setApproveModal] = useState<{isOpen: boolean, transaction: Transaction | null}>({
+    isOpen: false,
+    transaction: null
+  });
+  
 
-  // Fetch transaction details
-  useEffect(() => {
-    const fetchTransactionDetail = async () => {
-      if (!transactionId) return;
+  const fetchTransactionDetail = async () => {
+    if (!transactionId) return;
+    
+    try {
+      setIsLoading(true);
+      setError(null);
       
-      try {
-        setIsLoading(true);
-        setError(null);
-        
-        // Use the service function instead of direct fetch
-        const data = await getTransactionById(transactionId);
-        setTransaction(data);
-      } catch (error) {
-        console.error('Error fetching transaction:', error);
-        setError(error instanceof Error ? error.message : 'Failed to load transaction details');
-        toast.error('Failed to load transaction details');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
+      const data = await getTransactionById(transactionId);
+      setTransaction(data);
+    } catch (error) {
+      console.error('Error fetching transaction:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load transaction details');
+      toast.error('Failed to load transaction details');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Kemudian ubah useEffect menjadi:
+  useEffect(() => {
     fetchTransactionDetail();
   }, [transactionId]);
 
@@ -152,20 +158,24 @@ export default function TransactionDetailPage() {
     });
   };
 
-  // Handle close modals
+  
+  
+  // Update closeModals handler untuk menutup semua modal:
   const handleCloseModals = () => {
     setShippingModal({ isOpen: false, transaction: null });
     setCompleteModal({ isOpen: false, transaction: null });
     setPreviewModal({ isOpen: false, imageUrl: null, isLoading: false });
+    setApproveModal({ isOpen: false, transaction: null });
   };
 
-  // Handle shipping submission
   const handleShippingSubmit = async (txnId: string, shippingData: {
     staffName: string,
     notes: string
   }) => {
     try {
       setIsProcessing(true);
+      console.log("Mengirim permintaan update status ke SHIPPED:", txnId, shippingData);
+      
       await updateOrderStatusFromTransaction(
         txnId,
         'SHIPPED',
@@ -195,13 +205,52 @@ export default function TransactionDetailPage() {
     }
   };
 
-  // Handle complete order submission
+  const handleApprovePayment = async (txnId: string, staffData: { staffName: string, notes: string }) => {
+    try {
+      setIsProcessing(true);
+      console.log("Processing payment approval for:", txnId);
+      
+      await verifyPayment(txnId, { 
+        status: 'SUCCESS',
+        verifiedBy: staffData.staffName,
+        notes: staffData.notes
+      });
+      
+      // Update transaction in state
+      setTransaction((prev) => {
+        if (!prev) return null;
+        
+        return {
+          ...prev,
+          status: 'SUCCESS',
+          order: {
+            ...prev.order,
+            status: 'PROCESSING'
+          }
+        };
+      });
+      
+      toast.success('Pembayaran berhasil diverifikasi');
+      setApproveModal({ isOpen: false, transaction: null });
+      
+      // Reload data
+      fetchTransactionDetail();
+    } catch (error) {
+      console.error('Failed to verify payment:', error);
+      toast.error('Gagal memverifikasi pembayaran');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+  
   const handleCompleteSubmit = async (txnId: string, completeData: {
     staffName: string,
     notes: string
   }) => {
     try {
       setIsProcessing(true);
+      console.log("Mengirim permintaan update status ke DELIVERED:", txnId, completeData);
+      
       await updateOrderStatusFromTransaction(
         txnId,
         'DELIVERED',
@@ -290,12 +339,22 @@ export default function TransactionDetailPage() {
   const transactionStatus = transaction.status;
   const orderStatus = transaction.order?.status || 'PENDING';
   
-  // Check if transaction is eligible for shipping
-  const canShip = transactionStatus === 'SUCCESS' && 
-                 (orderStatus === 'PENDING' || orderStatus === 'PROCESSING');
-                 
-  // Check if transaction is eligible for completion
-  const canComplete = transactionStatus === 'SUCCESS' && orderStatus === 'SHIPPED';
+// Kondisi untuk tombol Approve Payment
+const canApprove = transactionStatus === 'PENDING' && transaction.paymentProof;
+
+// Kondisi untuk tombol Process Order - perlu diperbarui
+const canProcess = transactionStatus === 'SUCCESS' && orderStatus === 'PENDING';
+
+// Kondisi untuk tombol Ship Order - perlu diperbarui
+const canShip = transactionStatus === 'SUCCESS' && orderStatus === 'PROCESSING';
+                
+// Kondisi untuk tombol Complete Order
+const canComplete = transactionStatus === 'SUCCESS' && orderStatus === 'SHIPPED';
+
+// Kondisi untuk quick completion (offline orders)
+const canQuickComplete = transactionStatus === 'SUCCESS' && 
+                         orderStatus === 'PROCESSING' && 
+                         transaction.order.orderType === 'OFFLINE';
 
   // Calculate totals
   const subtotal = transaction.amount - 
@@ -339,42 +398,84 @@ export default function TransactionDetailPage() {
           </div>
           
           <div className="flex flex-wrap gap-2">
-            {canShip && (
-              <Button
-                onClick={handleShipOrder}
-                variant="secondary"
-                className="flex items-center"
-                disabled={isProcessing}
-              >
-                <Truck className="h-4 w-4 mr-1" />
-                <span>Ship Order</span>
-              </Button>
-            )}
-            
-            {canComplete && (
-              <Button
-                onClick={handleCompleteOrder}
-                variant="default"
-                className="flex items-center bg-green-600 hover:bg-green-700 text-white"
-                disabled={isProcessing}
-              >
-                <CheckCircle className="h-4 w-4 mr-1" />
-                <span>Complete Order</span>
-              </Button>
-            )}
-            
-            {transactionStatus === 'SUCCESS' && (
-              <Button
-                onClick={handleSendReceipt}
-                variant="outline"
-                disabled={isProcessing}
-                className="flex items-center"
-              >
-                <Send className="h-4 w-4 mr-1" />
-                <span>Send Receipt</span>
-              </Button>
-            )}
-          </div>
+  {/* Approve Payment Button */}
+  {canApprove && (
+    <Button
+      onClick={() => setApproveModal({isOpen: true, transaction})}
+      variant="success"
+      className="flex items-center bg-green-600 hover:bg-green-700 text-white"
+      disabled={isProcessing}
+    >
+      <CheckCircle className="h-4 w-4 mr-1" />
+      <span>Approve Payment</span>
+    </Button>
+  )}
+  
+  {/* Process Order Button */}
+  {canProcess && (
+    <Button
+      onClick={() => setProcessModal({isOpen: true, transaction})}
+      variant="default"
+      className="flex items-center bg-blue-600 hover:bg-blue-700 text-white"
+      disabled={isProcessing}
+    >
+      <Package className="h-4 w-4 mr-1" />
+      <span>Process Order</span>
+    </Button>
+  )}
+  
+  {/* Ship Order Button */}
+  {canShip && (
+    <Button
+      onClick={handleShipOrder}
+      variant="secondary"
+      className="flex items-center"
+      disabled={isProcessing}
+    >
+      <Truck className="h-4 w-4 mr-1" />
+      <span>Ship Order</span>
+    </Button>
+  )}
+  
+  {/* Complete Order Button */}
+  {canComplete && (
+    <Button
+      onClick={handleCompleteOrder}
+      variant="default"
+      className="flex items-center bg-green-600 hover:bg-green-700 text-white"
+      disabled={isProcessing}
+    >
+      <CheckCircle className="h-4 w-4 mr-1" />
+      <span>Complete Order</span>
+    </Button>
+  )}
+  
+  {/* Quick Complete for Offline Orders */}
+  {canQuickComplete && (
+    <Button
+      onClick={handleCompleteOrder}
+      variant="default" 
+      className="flex items-center bg-purple-600 hover:bg-purple-700 text-white"
+      disabled={isProcessing}
+    >
+      <CheckCircle className="h-4 w-4 mr-1" />
+      <span>Mark as Delivered</span>
+    </Button>
+  )}
+  
+  {/* Send Receipt Button */}
+  {transactionStatus === 'SUCCESS' && (
+    <Button
+      onClick={handleSendReceipt}
+      variant="outline"
+      disabled={isProcessing}
+      className="flex items-center"
+    >
+      <Send className="h-4 w-4 mr-1" />
+      <span>Send Receipt</span>
+    </Button>
+  )}
+</div>
         </div>
         
         {/* Status Bar */}
@@ -714,6 +815,14 @@ export default function TransactionDetailPage() {
         onClose={handleCloseModals}
         onSubmit={handleCompleteSubmit}
       />
+
+<ApprovePaymentModal
+  isOpen={approveModal.isOpen}
+  transaction={approveModal.transaction}
+  onClose={handleCloseModals}
+  onSubmit={handleApprovePayment}
+  onViewProof={(imageUrl) => handleViewPaymentProof(imageUrl)}
+/>
 
       {/* Payment Proof Preview Modal */}
       {previewModal.isOpen && previewModal.imageUrl && (

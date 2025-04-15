@@ -7,6 +7,7 @@ import Footer from '@/components/common/Footer';
 import { Product } from '@/types/product';
 import { getAllProducts } from '@/services/product';
 import { getAllCategories } from '@/services/category';
+import ChatAssistant from '@/components/ChatAssistant';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -137,6 +138,7 @@ export default function ProductsPage() {
         </div>
       </div>
       <Footer />
+      <ChatAssistant />
     </> 
   );
 }

@@ -13,7 +13,8 @@ import {
   X,
   FileText,
   Search,
-  ImageIcon
+  ImageIcon,
+  Download
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';

@@ -7,14 +7,16 @@ export const getTransactionById = async (transactionId: string): Promise<Transac
   return response.data;
 }
 
+
 export const updateOrderStatusFromTransaction = async (
   transactionId: string,
   orderStatus: string,
   data: { staffName: string, notes: string }
 ): Promise<any> => {
-  const response = await api.put(`/transaction/${transactionId}/update-order`, {
-    orderStatus,
-    ...data
+  const response = await api.put(`/transaction/${transactionId}/status`, {
+    status: orderStatus, 
+    staffName: data.staffName,
+    notes: data.notes
   });
   return response.data;
 };

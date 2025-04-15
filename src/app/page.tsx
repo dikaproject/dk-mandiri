@@ -116,7 +116,6 @@ export default function Home() {
         <ProductSection />
         <MitraSection />
         <HowToOrder />
-        <Contact />
       </main>
       <Footer />
       <ChatAssistant />
