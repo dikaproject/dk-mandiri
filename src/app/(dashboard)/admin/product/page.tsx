@@ -3,18 +3,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { 
-  Search, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  AlertCircle,
-  ChevronLeft,
-  ChevronRight,
-  Loader2,
-  Package,
-  Tag
-} from 'lucide-react';
+import { Plus, Search, Tag, Package, Loader2, AlertCircle, ChevronLeft, ChevronRight, Edit, Trash2, RefreshCw, DatabaseIcon } from 'lucide-react';
+import UpdateStockModal from '@/components/admin/UpdateStockModal';
 import { getAllProducts, deleteProduct } from '@/services/product';
 import { Product } from '@/types/product';
 import { toast } from 'react-hot-toast';
@@ -29,6 +19,31 @@ export default function ProductPage() {
   const [filterCategory, setFilterCategory] = useState<string>('');
   const itemsPerPage = 8;
   const router = useRouter();
+
+  const [stockUpdateModal, setStockUpdateModal] = useState<{
+    isOpen: boolean;
+    product: { id: string; name: string; weightInStock: number } | null;
+  }>({
+    isOpen: false,
+    product: null
+  });
+
+  const handleStockUpdate = (product: { id: string; name: string; weightInStock: number }) => {
+    setStockUpdateModal({
+      isOpen: true,
+      product
+    });
+  };
+
+  // Add handler for successful stock update
+  const handleStockUpdateSuccess = (productId: string, newStock: number) => {
+    // Update product in state
+    setProducts(products.map(product => 
+      product.id === productId 
+        ? { ...product, weightInStock: newStock } 
+        : product
+    ));
+  };
 
   // Fetch products
   useEffect(() => {
@@ -226,42 +241,61 @@ export default function ProductPage() {
   Min order: {product.minOrderWeight}g
 </p>
                       
-                      <div className="mt-4 flex items-center justify-between">
+                                            <div className="mt-4 flex items-center justify-between">
                         {deleteConfirm === product.id ? (
                           <div className="flex items-center space-x-2 w-full">
                             <span className="text-gray-500 dark:text-gray-400 text-xs mr-1">Delete?</span>
                             <button
                               onClick={() => handleConfirmDelete(product.id)}
                               disabled={isDeleting}
-                              className="text-red-600 hover:text-red-800 dark:hover:text-red-400 text-xs font-medium"
+                              className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs rounded-md disabled:opacity-50"
                             >
-                              {isDeleting ? (
-                                <Loader2 size={14} className="animate-spin" />
-                              ) : (
-                                "Yes"
-                              )}
+                              {isDeleting ? "Deleting..." : "Yes"}
                             </button>
                             <button
                               onClick={handleCancelDelete}
-                              className="text-gray-600 hover:text-gray-800 dark:hover:text-gray-400 text-xs font-medium"
+                              disabled={isDeleting}
+                              className="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs rounded-md disabled:opacity-50"
                             >
                               No
                             </button>
                           </div>
                         ) : (
                           <>
-                            <button
-                              onClick={() => router.push(`/admin/product/edit/${product.id}`)}
-                              className="text-blue-600 hover:text-blue-800 dark:hover:text-blue-400 flex items-center"
-                            >
-                              <Edit size={16} className="mr-1" />
-                              Edit
-                            </button>
+                            <div className="flex space-x-1">
+                              <button
+                                onClick={() => handleStockUpdate({
+                                  id: product.id,
+                                  name: product.name,
+                                  weightInStock: product.weightInStock
+                                })}
+                                className="px-2 py-1 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-md text-xs flex items-center"
+                                title="Update Stock"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                  <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM14 11a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z" />
+                                </svg>
+                                Stock
+                              </button>
+                              <button
+                                onClick={() => router.push(`/admin/product/edit/${product.id}`)}
+                                className="px-2 py-1 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-md text-xs flex items-center"
+                                title="Edit Product"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                </svg>
+                                Edit
+                              </button>
+                            </div>
                             <button
                               onClick={() => handleDeleteClick(product.id)}
-                              className="text-red-600 hover:text-red-800 dark:hover:text-red-400 flex items-center"
+                              className="px-2 py-1 bg-red-100 text-red-700 hover:bg-red-200 rounded-md text-xs flex items-center"
+                              title="Delete Product"
                             >
-                              <Trash2 size={16} className="mr-1" />
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
                               Delete
                             </button>
                           </>
@@ -321,6 +355,14 @@ export default function ProductPage() {
           )}
         </div>
       </motion.div>
+
+      {/* Stock Update Modal */}
+      <UpdateStockModal
+        isOpen={stockUpdateModal.isOpen}
+        product={stockUpdateModal.product}
+        onClose={() => setStockUpdateModal({ isOpen: false, product: null })}
+        onSuccess={handleStockUpdateSuccess}
+      />
     </div>
   );
 }

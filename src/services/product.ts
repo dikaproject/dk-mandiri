@@ -16,6 +16,11 @@ export const createProduct = async (data: CreateProductData): Promise<Product> =
   return response.data;
 };
 
+export const updateProductStock = async (id: string, weightInStock: number): Promise<Product> => {
+  const response = await api.patch(`/products/${id}/stock`, { weightInStock });
+  return response.data;
+};
+
 export const getProductBySlug = async (slug: string): Promise<Product> => {
   const response = await api.get(`/products/slug/${slug}`);
   return response.data;
