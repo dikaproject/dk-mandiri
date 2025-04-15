@@ -205,6 +205,7 @@ export default function ProductPage() {
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           className="object-cover"
+                          unoptimized
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full">
