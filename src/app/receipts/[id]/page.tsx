@@ -51,7 +51,7 @@ export default function ReceiptPage({ params }: { params: { id: string } }) {
   }, [id, token]);
 
   const pdfUrl = receiptData?.pdfFilename 
-  ? `${process.env.NEXT_PUBLIC_API_IMAGE || 'http://localhost:5000'}/uploads/receipts/${receiptData.pdfFilename}`
+  ? `${process.env.NEXT_PUBLIC_API_IMAGE || 'https://dkmandiri.id/api'}/uploads/receipts/${receiptData.pdfFilename}`
   : null;
 
   if (loading) {

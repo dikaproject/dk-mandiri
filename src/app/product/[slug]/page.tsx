@@ -162,6 +162,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                     alt={product.name}
                     fill
                     className="object-cover"
+                    unoptimized
                   />
                 </div>
                 
